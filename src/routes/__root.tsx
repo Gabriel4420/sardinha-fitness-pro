@@ -77,14 +77,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Antônio Sardinha — Consultor Fitness & Equipamentos Profissionais" },
+      { name: "description", content: "Consultor especialista em equipamentos fitness profissionais para academias, studios, condomínios, hotéis, clínicas e home gyms. Mais de 100 acessórios à pronta entrega. Atendimento personalizado em todo Brasil." },
+      { name: "keywords", content: "equipamentos fitness, equipamentos para academia, aparelhos de musculação, academia completa, acessórios fitness, equipamentos profissionais, equipamentos para studio, consultor fitness, academia residencial, home gym, aparelhos profissionais, equipamentos de academia pronta entrega, São José do Rio Preto" },
+      { name: "author", content: "Antônio Sardinha" },
+      { property: "og:title", content: "Antônio Sardinha — Consultor Fitness & Equipamentos Profissionais" },
+      { property: "og:description", content: "Equipamentos fitness profissionais para academias, studios e home gyms. Atendimento consultivo e mais de 100 acessórios à pronta entrega." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Antônio Sardinha Consultor Fitness" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Antônio Sardinha — Consultor Fitness" },
+      { name: "twitter:description", content: "Equipamentos profissionais para academias, studios e home gyms." },
     ],
     links: [
       {
