@@ -29,8 +29,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Antônio Sardinha — Consultor Fitness | Equipamentos para Academia" },
       { name: "description", content: "Equipamentos fitness profissionais para academias, studios, condomínios, hotéis e home gyms. Mais de 100 acessórios à pronta entrega. Atendimento personalizado em todo Brasil." },
-      { property: "og:title", content: "Antônio Sardinha — Consultor Fitness" },
-      { property: "og:description", content: "Equipamentos fitness profissionais e acessórios à pronta entrega. Solicite seu orçamento." },
+      { property: "og:title", content: "Antônio Sardinha — Consultor Fitness | Equipamentos para Academia" },
+      { property: "og:description", content: "Equipamentos fitness profissionais para academias, studios, condomínios, hotéis e home gyms. Mais de 100 acessórios à pronta entrega. Atendimento personalizado em todo Brasil." },
       { property: "og:url", content: "/" },
       { property: "og:image", content: heroImg.url },
       { name: "twitter:image", content: heroImg.url },
