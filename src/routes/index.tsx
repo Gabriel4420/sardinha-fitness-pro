@@ -50,9 +50,22 @@ const INSTAGRAM_URL = "https://www.instagram.com/consultorasfitness";
 const EMAIL = "ajsardinhaf@gmail.com";
 
 const leadSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(160),
-  objective: z.string().trim().min(5).max(1500),
+  name: z
+    .string()
+    .trim()
+    .min(2, "Informe seu nome completo (mínimo 2 caracteres).")
+    .max(100, "Nome muito longo (máximo 100 caracteres)."),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Informe seu e-mail.")
+    .email("E-mail inválido. Verifique o formato (ex.: nome@dominio.com).")
+    .max(160, "E-mail muito longo."),
+  objective: z
+    .string()
+    .trim()
+    .min(10, "Descreva seu objetivo com pelo menos 10 caracteres.")
+    .max(1500, "Mensagem muito longa (máximo 1500 caracteres)."),
   website: z.string().max(0).optional(),
 });
 
@@ -955,28 +968,64 @@ function Depoimentos() {
 
 function Contato() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [values, setValues] = useState({ name: "", email: "", objective: "" });
+  const [errors, setErrors] = useState<{ name?: string; email?: string; objective?: string }>({});
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
+  function validate() {
+    const result = leadSchema.safeParse({ ...values, website: "" });
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+    const fieldErrors: typeof errors = {};
+    for (const issue of result.error.issues) {
+      const key = issue.path[0] as keyof typeof errors;
+      if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    setErrors(fieldErrors);
+    return false;
+  }
+
+  function updateField(field: "name" | "email" | "objective", value: string) {
+    setValues((v) => ({ ...v, [field]: value }));
+    if (errors[field]) setErrors((e) => ({ ...e, [field]: undefined }));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMsg("");
+    if (!validate()) {
+      setStatus("error");
+      setErrorMsg("Corrija os campos destacados antes de enviar.");
+      return;
+    }
     const form = event.currentTarget;
-    const fields = new FormData(form);
+    const website = String(new FormData(form).get("website") || "");
     setStatus("loading");
     try {
-      await sendLead({
-        name: String(fields.get("name") || ""),
-        email: String(fields.get("email") || ""),
-        objective: String(fields.get("objective") || ""),
-        website: String(fields.get("website") || ""),
-      });
+      await sendLead({ ...values, website });
       form.reset();
+      setValues({ name: "", email: "", objective: "" });
       setStatus("success");
-    } catch {
+    } catch (err) {
       setStatus("error");
+      setErrorMsg(
+        err instanceof Error && err.message
+          ? err.message
+          : "Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.",
+      );
     }
   }
 
-  const fieldClass =
-    "mt-2 w-full rounded-xl border border-border bg-background/70 px-4 py-3.5 text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20";
+  const baseField =
+    "mt-2 w-full rounded-xl border bg-background/70 px-4 py-3.5 text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:ring-2";
+  const fieldClass = (hasError?: boolean) =>
+    `${baseField} ${
+      hasError
+        ? "border-destructive focus:border-destructive focus:ring-destructive/20"
+        : "border-border focus:border-primary focus:ring-primary/20"
+    }`;
   return (
     <Section id="contato" className="bg-card/30">
       <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 items-center">
@@ -1001,6 +1050,7 @@ function Contato() {
         </motion.div>
         <motion.form
           onSubmit={handleSubmit}
+          noValidate
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -1010,39 +1060,64 @@ function Contato() {
             <label className="text-sm font-medium">
               Nome
               <input
-                className={fieldClass}
+                className={fieldClass(!!errors.name)}
                 name="name"
                 type="text"
                 autoComplete="name"
                 placeholder="Seu nome"
-                minLength={2}
                 maxLength={100}
-                required
+                value={values.name}
+                onChange={(e) => updateField("name", e.target.value)}
+                onBlur={validate}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "err-name" : undefined}
               />
+              {errors.name && (
+                <span id="err-name" className="mt-1.5 block text-xs text-destructive">
+                  {errors.name}
+                </span>
+              )}
             </label>
             <label className="text-sm font-medium">
               E-mail
               <input
-                className={fieldClass}
+                className={fieldClass(!!errors.email)}
                 name="email"
                 type="email"
                 autoComplete="email"
                 placeholder="voce@email.com"
                 maxLength={160}
-                required
+                value={values.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                onBlur={validate}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "err-email" : undefined}
               />
+              {errors.email && (
+                <span id="err-email" className="mt-1.5 block text-xs text-destructive">
+                  {errors.email}
+                </span>
+              )}
             </label>
           </div>
           <label className="mt-5 block text-sm font-medium">
             Qual é o seu objetivo?
             <textarea
-              className={`${fieldClass} min-h-32 resize-y`}
+              className={`${fieldClass(!!errors.objective)} min-h-32 resize-y`}
               name="objective"
               placeholder="Ex.: montar uma academia de condomínio, renovar equipamentos do studio..."
-              minLength={5}
               maxLength={1500}
-              required
+              value={values.objective}
+              onChange={(e) => updateField("objective", e.target.value)}
+              onBlur={validate}
+              aria-invalid={!!errors.objective}
+              aria-describedby={errors.objective ? "err-objective" : undefined}
             />
+            {errors.objective && (
+              <span id="err-objective" className="mt-1.5 block text-xs text-destructive">
+                {errors.objective}
+              </span>
+            )}
           </label>
           <input
             className="hidden"
@@ -1068,10 +1143,8 @@ function Contato() {
             {status === "success" && (
               <p className="text-primary">Contato enviado! Em breve retorno para você.</p>
             )}
-            {status === "error" && (
-              <p className="text-destructive">
-                Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.
-              </p>
+            {status === "error" && errorMsg && (
+              <p className="text-destructive">{errorMsg}</p>
             )}
           </div>
         </motion.form>
@@ -1227,6 +1300,75 @@ function WhatsFloat() {
   );
 }
 
+function CookieConsent() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("lgpd-consent");
+      if (!stored) setVisible(true);
+    } catch {
+      setVisible(true);
+    }
+  }, []);
+
+  function decide(choice: "accepted" | "rejected") {
+    try {
+      localStorage.setItem(
+        "lgpd-consent",
+        JSON.stringify({ choice, date: new Date().toISOString() }),
+      );
+    } catch {
+      /* ignore */
+    }
+    setVisible(false);
+  }
+
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      role="dialog"
+      aria-live="polite"
+      aria-label="Aviso de cookies e privacidade (LGPD)"
+      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-4xl rounded-2xl border border-border bg-card/95 p-5 shadow-elegant backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-6"
+    >
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <h3 className="font-display text-base font-bold text-foreground">
+            Sua privacidade é importante 🍪
+          </h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão,
+            cookies para análise de navegação e melhoria da experiência, em conformidade com a{" "}
+            <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
+            aceitar ou recusar os cookies opcionais a qualquer momento.
+          </p>
+        </div>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row md:shrink-0">
+          <button
+            type="button"
+            onClick={() => decide("rejected")}
+            className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
+          >
+            Recusar
+          </button>
+          <button
+            type="button"
+            onClick={() => decide("accepted")}
+            className="rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition hover:scale-[1.02]"
+          >
+            Aceitar cookies
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -1246,6 +1388,7 @@ function Index() {
       </main>
       <Footer />
       <WhatsFloat />
+      <CookieConsent />
     </div>
   );
 }
