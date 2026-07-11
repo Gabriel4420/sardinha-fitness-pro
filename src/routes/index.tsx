@@ -42,6 +42,7 @@ import catHome from "@/assets/cat-home.jpg.asset.json";
 import catEstr from "@/assets/cat-estruturas.jpg.asset.json";
 import catAcess from "@/assets/cat-acessorios.jpg.asset.json";
 import acessHero from "@/assets/acessorios-hero.jpg.asset.json";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const WHATSAPP = "5517988311000";
 const WHATSAPP_MSG = encodeURIComponent("Olá! Gostaria de conhecer os equipamentos disponíveis.");
@@ -72,19 +73,15 @@ const leadSchema = z.object({
 async function sendLead(data: z.infer<typeof leadSchema>) {
   const parsed = leadSchema.parse(data);
   if (parsed.website) return { success: true };
-  const response = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({
-      name: parsed.name,
-      email: parsed.email,
-      objetivo: parsed.objective,
-      _subject: `Novo lead do site: ${parsed.name}`,
-      _template: "table",
-      _captcha: "false",
-    }),
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error("O formulário ainda não foi conectado ao Supabase.");
+  }
+  const { error } = await supabase.from("leads").insert({
+    name: parsed.name,
+    email: parsed.email,
+    objective: parsed.objective,
   });
-  if (!response.ok) throw new Error("Não foi possível enviar o contato.");
+  if (error) throw new Error("Não foi possível enviar o contato.");
   return { success: true };
 }
 
@@ -576,6 +573,21 @@ const CATEGORIAS = [
 function Catalogo() {
   const [active, setActive] = useState(CATEGORIAS[0].id);
   const cat = CATEGORIAS.find((c) => c.id === active)!;
+  const [catalogProducts, setCatalogProducts] = useState<Array<{ id: string; name: string; category: string; description: string; specifications: string; highlights: string; image_url: string | null }>>([]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.from("products").select("id,name,category,description,specifications,highlights,image_url").eq("published", true).order("sort_order").order("name")
+      .then(({ data }) => setCatalogProducts(data ?? []));
+  }, []);
+
+  const databaseProducts = catalogProducts.filter((product) =>
+    product.category.toLocaleLowerCase("pt-BR").includes(cat.name.toLocaleLowerCase("pt-BR").split(" ")[0]),
+  );
+  const shownProducts = databaseProducts.length ? databaseProducts : cat.products.map((product, index) => ({
+    id: `${cat.id}-${index}`, ...product, description: product.desc, category: cat.name,
+    specifications: "", highlights: "", image_url: null,
+  }));
 
   return (
     <Section id="catalogo">
@@ -644,21 +656,23 @@ function Catalogo() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          {cat.products.map((p, i) => (
+          {shownProducts.map((p, i) => (
             <motion.div
-              key={p.name}
+              key={p.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
               className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all hover:-translate-y-1"
             >
+              {p.image_url && <img src={p.image_url} alt={p.name} loading="lazy" className="mb-4 h-44 w-full rounded-xl bg-muted object-contain" />}
               <div className="flex items-start justify-between gap-3">
                 <h4 className="font-display font-bold text-lg">{p.name}</h4>
                 <div className="grid place-items-center w-8 h-8 rounded-lg bg-primary/10 text-primary shrink-0">
                   <cat.icon className="w-4 h-4" />
                 </div>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>
+              {p.specifications && <p className="mt-3 whitespace-pre-line text-xs text-muted-foreground"><strong className="text-foreground">Especificações:</strong>{"\n"}{p.specifications}</p>}
               <a
                 href={WHATSAPP_URL}
                 target="_blank"
@@ -1302,29 +1316,50 @@ function WhatsFloat() {
 
 function CookieConsent() {
   const [visible, setVisible] = useState(false);
+  const [managing, setManaging] = useState(false);
+  const [preferences, setPreferences] = useState({ analytics: false, marketing: false });
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("lgpd-consent");
       if (!stored) setVisible(true);
+      else {
+        const saved = JSON.parse(stored);
+        setPreferences({
+          analytics: saved.categories?.analytics === true,
+          marketing: saved.categories?.marketing === true,
+        });
+      }
     } catch {
       setVisible(true);
     }
   }, []);
 
-  function decide(choice: "accepted" | "rejected") {
+  function save(categories: { analytics: boolean; marketing: boolean }) {
     try {
       localStorage.setItem(
         "lgpd-consent",
-        JSON.stringify({ choice, date: new Date().toISOString() }),
+        JSON.stringify({ version: 2, categories: { necessary: true, ...categories }, date: new Date().toISOString() }),
       );
     } catch {
       /* ignore */
     }
+    setPreferences(categories);
     setVisible(false);
+    setManaging(false);
   }
 
-  if (!visible) return null;
+  if (!visible) {
+    return (
+      <button
+        type="button"
+        onClick={() => { setManaging(true); setVisible(true); }}
+        className="fixed bottom-5 left-5 z-50 rounded-full border border-border bg-card/95 px-4 py-2 text-xs font-semibold text-foreground shadow-elegant backdrop-blur-md transition hover:bg-muted"
+      >
+        Preferências de cookies
+      </button>
+    );
+  }
 
   return (
     <motion.div
@@ -1336,7 +1371,7 @@ function CookieConsent() {
       aria-label="Aviso de cookies e privacidade (LGPD)"
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-4xl rounded-2xl border border-border bg-card/95 p-5 shadow-elegant backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-6"
     >
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4">
         <div className="flex-1">
           <h3 className="font-display text-base font-bold text-foreground">
             Sua privacidade é importante 🍪
@@ -1348,24 +1383,41 @@ function CookieConsent() {
             aceitar ou recusar os cookies opcionais a qualquer momento.
           </p>
         </div>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row md:shrink-0">
+        {managing && (
+          <div className="grid gap-2 sm:grid-cols-3">
+            <CookieCategory title="Necessários" description="Essenciais para o site funcionar." checked disabled />
+            <CookieCategory title="Analytics" description="Ajudam a entender o uso do site." checked={preferences.analytics} onChange={(analytics) => setPreferences((p) => ({ ...p, analytics }))} />
+            <CookieCategory title="Marketing" description="Permitem personalizar campanhas." checked={preferences.marketing} onChange={(marketing) => setPreferences((p) => ({ ...p, marketing }))} />
+          </div>
+        )}
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
-            onClick={() => decide("rejected")}
+            onClick={() => save({ analytics: false, marketing: false })}
             className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
           >
-            Recusar
+            Recusar opcionais
           </button>
+          {!managing && <button type="button" onClick={() => setManaging(true)} className="rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10">Gerenciar preferências</button>}
           <button
             type="button"
-            onClick={() => decide("accepted")}
+            onClick={() => save(managing ? preferences : { analytics: true, marketing: true })}
             className="rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition hover:scale-[1.02]"
           >
-            Aceitar cookies
+            {managing ? "Salvar preferências" : "Aceitar todos"}
           </button>
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function CookieCategory({ title, description, checked, disabled = false, onChange }: { title: string; description: string; checked: boolean; disabled?: boolean; onChange?: (checked: boolean) => void }) {
+  return (
+    <label className={`flex items-start gap-3 rounded-xl border border-border p-3 ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}>
+      <input type="checkbox" checked={checked} disabled={disabled} onChange={(event) => onChange?.(event.target.checked)} className="mt-1 h-4 w-4 accent-primary" />
+      <span><span className="block text-sm font-bold text-foreground">{title}</span><span className="block text-xs leading-relaxed text-muted-foreground">{description}</span></span>
+    </label>
   );
 }
 
