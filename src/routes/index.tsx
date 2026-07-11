@@ -50,9 +50,22 @@ const INSTAGRAM_URL = "https://www.instagram.com/consultorasfitness";
 const EMAIL = "ajsardinhaf@gmail.com";
 
 const leadSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(160),
-  objective: z.string().trim().min(5).max(1500),
+  name: z
+    .string()
+    .trim()
+    .min(2, "Informe seu nome completo (mínimo 2 caracteres).")
+    .max(100, "Nome muito longo (máximo 100 caracteres)."),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Informe seu e-mail.")
+    .email("E-mail inválido. Verifique o formato (ex.: nome@dominio.com).")
+    .max(160, "E-mail muito longo."),
+  objective: z
+    .string()
+    .trim()
+    .min(10, "Descreva seu objetivo com pelo menos 10 caracteres.")
+    .max(1500, "Mensagem muito longa (máximo 1500 caracteres)."),
   website: z.string().max(0).optional(),
 });
 
