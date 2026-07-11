@@ -1300,6 +1300,75 @@ function WhatsFloat() {
   );
 }
 
+function CookieConsent() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("lgpd-consent");
+      if (!stored) setVisible(true);
+    } catch {
+      setVisible(true);
+    }
+  }, []);
+
+  function decide(choice: "accepted" | "rejected") {
+    try {
+      localStorage.setItem(
+        "lgpd-consent",
+        JSON.stringify({ choice, date: new Date().toISOString() }),
+      );
+    } catch {
+      /* ignore */
+    }
+    setVisible(false);
+  }
+
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      role="dialog"
+      aria-live="polite"
+      aria-label="Aviso de cookies e privacidade (LGPD)"
+      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-4xl rounded-2xl border border-border bg-card/95 p-5 shadow-elegant backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-6"
+    >
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <h3 className="font-display text-base font-bold text-foreground">
+            Sua privacidade é importante 🍪
+          </h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão,
+            cookies para análise de navegação e melhoria da experiência, em conformidade com a{" "}
+            <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
+            aceitar ou recusar os cookies opcionais a qualquer momento.
+          </p>
+        </div>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row md:shrink-0">
+          <button
+            type="button"
+            onClick={() => decide("rejected")}
+            className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
+          >
+            Recusar
+          </button>
+          <button
+            type="button"
+            onClick={() => decide("accepted")}
+            className="rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition hover:scale-[1.02]"
+          >
+            Aceitar cookies
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -1319,6 +1388,7 @@ function Index() {
       </main>
       <Footer />
       <WhatsFloat />
+      <CookieConsent />
     </div>
   );
 }
