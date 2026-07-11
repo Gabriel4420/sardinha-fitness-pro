@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
+
 import { motion, useScroll, useTransform } from "framer-motion";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -56,35 +56,24 @@ const leadSchema = z.object({
   website: z.string().max(0).optional(),
 });
 
-const sendLead = createServerFn({ method: "POST" })
-  .validator(leadSchema)
-  .handler(async ({ data }) => {
-    const apiKey = process.env.RESEND_API_KEY;
-    const recipient = process.env.LEAD_RECIPIENT_EMAIL || EMAIL;
-    if (!apiKey) throw new Error("Serviço de e-mail não configurado.");
-
-    const escapeHtml = (value: string) =>
-      value.replace(
-        /[&<>'"]/g,
-        (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]!,
-      );
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.LEAD_FROM_EMAIL || "Sardinha Fitness <onboarding@resend.dev>",
-        to: [recipient],
-        reply_to: data.email,
-        subject: `Novo lead do site: ${data.name}`,
-        html: `<h2>Novo contato pelo site</h2><p><strong>Nome:</strong> ${escapeHtml(data.name)}</p><p><strong>E-mail:</strong> ${escapeHtml(data.email)}</p><p><strong>Objetivo:</strong></p><p>${escapeHtml(data.objective).replace(/\n/g, "<br>")}</p>`,
-      }),
-    });
-    if (!response.ok) {
-      console.error("Falha no envio do lead:", response.status, await response.text());
-      throw new Error("Não foi possível enviar o contato.");
-    }
-    return { success: true };
+async function sendLead(data: z.infer<typeof leadSchema>) {
+  const parsed = leadSchema.parse(data);
+  if (parsed.website) return { success: true };
+  const response = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      name: parsed.name,
+      email: parsed.email,
+      objetivo: parsed.objective,
+      _subject: `Novo lead do site: ${parsed.name}`,
+      _template: "table",
+      _captcha: "false",
+    }),
   });
+  if (!response.ok) throw new Error("Não foi possível enviar o contato.");
+  return { success: true };
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
