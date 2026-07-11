@@ -357,7 +357,7 @@ function Sobre() {
           <div className="absolute -inset-4 bg-gradient-primary opacity-20 blur-3xl rounded-full" />
           <div className="relative overflow-hidden rounded-3xl shadow-elegant">
             <img
-              src="./src/assets/consultor.png"
+              src={consultorImg.url}
               alt="Antônio Sardinha, consultor fitness"
               width={900}
               height={1100}
