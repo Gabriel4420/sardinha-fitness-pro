@@ -963,12 +963,10 @@ function Contato() {
     setStatus("loading");
     try {
       await sendLead({
-        data: {
-          name: String(fields.get("name") || ""),
-          email: String(fields.get("email") || ""),
-          objective: String(fields.get("objective") || ""),
-          website: String(fields.get("website") || ""),
-        },
+        name: String(fields.get("name") || ""),
+        email: String(fields.get("email") || ""),
+        objective: String(fields.get("objective") || ""),
+        website: String(fields.get("website") || ""),
       });
       form.reset();
       setStatus("success");
