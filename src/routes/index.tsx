@@ -968,28 +968,64 @@ function Depoimentos() {
 
 function Contato() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [values, setValues] = useState({ name: "", email: "", objective: "" });
+  const [errors, setErrors] = useState<{ name?: string; email?: string; objective?: string }>({});
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
+  function validate() {
+    const result = leadSchema.safeParse({ ...values, website: "" });
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+    const fieldErrors: typeof errors = {};
+    for (const issue of result.error.issues) {
+      const key = issue.path[0] as keyof typeof errors;
+      if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    setErrors(fieldErrors);
+    return false;
+  }
+
+  function updateField(field: "name" | "email" | "objective", value: string) {
+    setValues((v) => ({ ...v, [field]: value }));
+    if (errors[field]) setErrors((e) => ({ ...e, [field]: undefined }));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMsg("");
+    if (!validate()) {
+      setStatus("error");
+      setErrorMsg("Corrija os campos destacados antes de enviar.");
+      return;
+    }
     const form = event.currentTarget;
-    const fields = new FormData(form);
+    const website = String(new FormData(form).get("website") || "");
     setStatus("loading");
     try {
-      await sendLead({
-        name: String(fields.get("name") || ""),
-        email: String(fields.get("email") || ""),
-        objective: String(fields.get("objective") || ""),
-        website: String(fields.get("website") || ""),
-      });
+      await sendLead({ ...values, website });
       form.reset();
+      setValues({ name: "", email: "", objective: "" });
       setStatus("success");
-    } catch {
+    } catch (err) {
       setStatus("error");
+      setErrorMsg(
+        err instanceof Error && err.message
+          ? err.message
+          : "Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.",
+      );
     }
   }
 
-  const fieldClass =
-    "mt-2 w-full rounded-xl border border-border bg-background/70 px-4 py-3.5 text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20";
+  const baseField =
+    "mt-2 w-full rounded-xl border bg-background/70 px-4 py-3.5 text-foreground outline-none transition placeholder:text-muted-foreground/60 focus:ring-2";
+  const fieldClass = (hasError?: boolean) =>
+    `${baseField} ${
+      hasError
+        ? "border-destructive focus:border-destructive focus:ring-destructive/20"
+        : "border-border focus:border-primary focus:ring-primary/20"
+    }`;
   return (
     <Section id="contato" className="bg-card/30">
       <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 items-center">
@@ -1014,6 +1050,7 @@ function Contato() {
         </motion.div>
         <motion.form
           onSubmit={handleSubmit}
+          noValidate
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -1023,39 +1060,64 @@ function Contato() {
             <label className="text-sm font-medium">
               Nome
               <input
-                className={fieldClass}
+                className={fieldClass(!!errors.name)}
                 name="name"
                 type="text"
                 autoComplete="name"
                 placeholder="Seu nome"
-                minLength={2}
                 maxLength={100}
-                required
+                value={values.name}
+                onChange={(e) => updateField("name", e.target.value)}
+                onBlur={validate}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "err-name" : undefined}
               />
+              {errors.name && (
+                <span id="err-name" className="mt-1.5 block text-xs text-destructive">
+                  {errors.name}
+                </span>
+              )}
             </label>
             <label className="text-sm font-medium">
               E-mail
               <input
-                className={fieldClass}
+                className={fieldClass(!!errors.email)}
                 name="email"
                 type="email"
                 autoComplete="email"
                 placeholder="voce@email.com"
                 maxLength={160}
-                required
+                value={values.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                onBlur={validate}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "err-email" : undefined}
               />
+              {errors.email && (
+                <span id="err-email" className="mt-1.5 block text-xs text-destructive">
+                  {errors.email}
+                </span>
+              )}
             </label>
           </div>
           <label className="mt-5 block text-sm font-medium">
             Qual é o seu objetivo?
             <textarea
-              className={`${fieldClass} min-h-32 resize-y`}
+              className={`${fieldClass(!!errors.objective)} min-h-32 resize-y`}
               name="objective"
               placeholder="Ex.: montar uma academia de condomínio, renovar equipamentos do studio..."
-              minLength={5}
               maxLength={1500}
-              required
+              value={values.objective}
+              onChange={(e) => updateField("objective", e.target.value)}
+              onBlur={validate}
+              aria-invalid={!!errors.objective}
+              aria-describedby={errors.objective ? "err-objective" : undefined}
             />
+            {errors.objective && (
+              <span id="err-objective" className="mt-1.5 block text-xs text-destructive">
+                {errors.objective}
+              </span>
+            )}
           </label>
           <input
             className="hidden"
@@ -1081,10 +1143,8 @@ function Contato() {
             {status === "success" && (
               <p className="text-primary">Contato enviado! Em breve retorno para você.</p>
             )}
-            {status === "error" && (
-              <p className="text-destructive">
-                Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.
-              </p>
+            {status === "error" && errorMsg && (
+              <p className="text-destructive">{errorMsg}</p>
             )}
           </div>
         </motion.form>
