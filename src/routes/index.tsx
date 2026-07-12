@@ -1367,9 +1367,22 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto max-w-7xl mt-10 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Antônio Sardinha — Consultor Fitness. Todos os direitos
-        reservados.
+      <div className="mx-auto max-w-7xl mt-10 pt-6 border-t border-border flex flex-col items-center gap-2 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between">
+        <p>
+          © {new Date().getFullYear()} Antônio Sardinha — Consultor Fitness. Todos os direitos
+          reservados.
+        </p>
+        <p>
+          Desenvolvido por{" "}
+          <a
+            href="https://gabrielrodrigues.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-primary transition hover:text-primary/80"
+          >
+            @gabriel4420
+          </a>
+        </p>
       </div>
     </footer>
   );
