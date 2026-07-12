@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { type FormEvent, useEffect, useRef, useState } from "react";
@@ -33,6 +33,14 @@ import {
   Send,
 } from "lucide-react";
 import heroImg from "@/assets/hero-gym.jpg.asset.json";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { PrivacyPolicyContent } from "@/components/PrivacyPolicyContent";
 import consultorImg from "@/assets/consultor.jpg.asset.json";
 import catMusc from "@/assets/cat-musculacao.jpg.asset.json";
 import catCardio from "@/assets/cat-cardio.jpg.asset.json";
