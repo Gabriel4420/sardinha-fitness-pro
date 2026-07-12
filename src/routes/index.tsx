@@ -198,7 +198,7 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   );
 }
 
-function Nav() {
+export function Nav() {
   const links = [
     { href: "#sobre", label: "Sobre" },
     { href: "#diferenciais", label: "Diferenciais" },
@@ -1287,10 +1287,10 @@ function CTA() {
   );
 }
 
-function Footer() {
+export function Footer() {
   return (
     <footer className="border-t border-border bg-card/40 py-14 px-4 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-7xl grid md:grid-cols-3 gap-10">
+      <div className="mx-auto max-w-7xl grid md:grid-cols-4 gap-10">
         <div>
           <a
             href="#top"
@@ -1371,6 +1371,16 @@ function Footer() {
               <a href="#como-funciona" className="hover:text-primary transition-colors">
                 Como funciona
               </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-display font-bold mb-4">Politicas do site</h4>
+          <ul className="space-y-3 text-sm text-muted-foreground">
+            <li>
+              <Link to="/privacidade" className="hover:text-primary transition-colors">
+                Privacidade e cookies
+              </Link>
             </li>
           </ul>
         </div>
