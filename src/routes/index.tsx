@@ -1393,8 +1393,140 @@ function WhatsFloat() {
 }
 
 function CookieConsent() {
+  return <CookieConsentInner />;
+}
+
+function PrivacyPolicyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+  const updated = new Date().toLocaleDateString("pt-BR", { year: "numeric", month: "long" });
+
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="privacy-policy-title"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-elegant"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
+          <div>
+            <h2 id="privacy-policy-title" className="font-display text-xl font-bold text-foreground">
+              Política de Privacidade e Cookies
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">Última atualização: {updated}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar política de privacidade"
+            className="rounded-full border border-border p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          </button>
+        </div>
+        <div className="space-y-5 overflow-y-auto px-6 py-5 text-sm leading-relaxed text-muted-foreground">
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">1. Quem somos</h3>
+            <p>
+              Este site é mantido por <strong className="text-foreground">Antônio Sardinha — Consultor Fitness</strong>,
+              responsável pelo tratamento dos dados pessoais aqui coletados, em conformidade com a{" "}
+              <strong className="text-foreground">Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</strong>.
+              Para qualquer solicitação relacionada aos seus dados, entre em contato pelo e-mail{" "}
+              <a href={`mailto:${EMAIL}`} className="text-primary underline underline-offset-2">{EMAIL}</a>.
+            </p>
+          </section>
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">2. Dados que coletamos</h3>
+            <p>
+              Coletamos apenas os dados que você nos fornece voluntariamente ao preencher nosso formulário de contato,
+              como <strong className="text-foreground">nome, e-mail e a descrição do seu objetivo/projeto</strong>. Também
+              podemos coletar dados técnicos de navegação (páginas visitadas, tipo de dispositivo, navegador e origem
+              de acesso) por meio de cookies opcionais.
+            </p>
+          </section>
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">3. Finalidade do uso</h3>
+            <p>Utilizamos seus dados exclusivamente para:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              <li>Responder à sua solicitação de contato e enviar orçamentos.</li>
+              <li>Encaminhar informações sobre equipamentos, condições comerciais e prazos.</li>
+              <li>Melhorar a experiência de navegação e a qualidade do site.</li>
+            </ul>
+            <p className="mt-2">Não vendemos, alugamos ou compartilhamos seus dados com terceiros para fins comerciais.</p>
+          </section>
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">4. Cookies utilizados</h3>
+            <ul className="mt-1 list-disc space-y-1 pl-5">
+              <li>
+                <strong className="text-foreground">Necessários:</strong> essenciais para o funcionamento do site, como
+                salvar suas preferências de consentimento. Não podem ser desativados.
+              </li>
+              <li>
+                <strong className="text-foreground">Analytics:</strong> nos ajudam a entender como o site é usado, de
+                forma agregada e anônima. Requerem seu consentimento.
+              </li>
+              <li>
+                <strong className="text-foreground">Marketing:</strong> permitem personalizar campanhas e mensurar
+                resultados. Requerem seu consentimento.
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">5. Seus direitos (LGPD)</h3>
+            <p>
+              Você pode, a qualquer momento, solicitar a confirmação do tratamento, acesso, correção, anonimização,
+              portabilidade, eliminação ou revogação do consentimento dos seus dados pessoais. Basta enviar um e-mail
+              para <a href={`mailto:${EMAIL}`} className="text-primary underline underline-offset-2">{EMAIL}</a>.
+            </p>
+          </section>
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">6. Envio do formulário</h3>
+            <p>
+              Os dados enviados pelo formulário de contato são transmitidos por meio do serviço FormSubmit para
+              entrega do e-mail ao nosso endereço. Não armazenamos essas informações em banco de dados próprio.
+            </p>
+          </section>
+          <section>
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">7. Alterações</h3>
+            <p>
+              Esta política pode ser atualizada periodicamente. Recomendamos revisá-la sempre que utilizar o site.
+            </p>
+          </section>
+        </div>
+        <div className="flex justify-end border-t border-border bg-background/40 px-6 py-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-gradient-primary px-5 py-2 text-sm font-bold text-primary-foreground shadow-glow transition hover:scale-[1.02]"
+          >
+            Entendi
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CookieConsentInner() {
   const [visible, setVisible] = useState(false);
   const [managing, setManaging] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
   const [preferences, setPreferences] = useState({ analytics: false, marketing: false });
 
   useEffect(() => {
@@ -1465,7 +1597,15 @@ function CookieConsent() {
             Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão, cookies
             para análise de navegação e melhoria da experiência, em conformidade com a{" "}
             <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
-            aceitar ou recusar os cookies opcionais a qualquer momento.
+            aceitar ou recusar os cookies opcionais a qualquer momento. Saiba mais na nossa{" "}
+            <button
+              type="button"
+              onClick={() => setPolicyOpen(true)}
+              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+            >
+              Política de Privacidade e Cookies
+            </button>
+            .
           </p>
         </div>
         {managing && (
@@ -1516,6 +1656,7 @@ function CookieConsent() {
           </button>
         </div>
       </div>
+      <PrivacyPolicyModal open={policyOpen} onClose={() => setPolicyOpen(false)} />
     </motion.div>
   );
 }
