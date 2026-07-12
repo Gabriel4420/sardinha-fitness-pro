@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import {
@@ -42,6 +42,7 @@ import catHome from "@/assets/cat-home.jpg.asset.json";
 import catEstr from "@/assets/cat-estruturas.jpg.asset.json";
 import catAcess from "@/assets/cat-acessorios.jpg.asset.json";
 import acessHero from "@/assets/acessorios-hero.jpg.asset.json";
+import logoImg from "@/assets/Logo.png";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const WHATSAPP = "5517988311000";
@@ -200,12 +201,13 @@ function Nav() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2 font-display font-bold text-lg">
-          <div className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-primary shadow-glow">
-            <Dumbbell className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span>
-            Sardinha<span className="text-primary">.</span>
+        <a href="#top" aria-label="Antônio Sardinha - Início" className="group flex items-center">
+          <span className="relative h-16 w-36 overflow-hidden rounded-lg shadow-elegant ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-[1.02] sm:w-44">
+            <img
+              src={logoImg}
+              alt="Antônio Sardinha - Consultor de Equipamentos Fitness"
+              className="absolute bg-transparent inset-0 size-full scale-[1.38] object-contain"
+            />
           </span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
@@ -230,6 +232,7 @@ function Nav() {
 
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.2]);
@@ -248,6 +251,30 @@ function Hero() {
         <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
       </motion.div>
 
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 right-[8%] hidden w-px overflow-hidden bg-border/50 lg:block"
+      >
+        <motion.span
+          initial={{ y: "-100%" }}
+          animate={{ y: reduceMotion ? "0%" : "400%" }}
+          transition={{
+            duration: 2.8,
+            ease: "easeInOut",
+            repeat: reduceMotion ? 0 : Infinity,
+            repeatDelay: 0.8,
+          }}
+          className="block h-1/4 w-full bg-linear-to-b from-transparent via-primary to-transparent shadow-glow"
+        />
+      </div>
+      <motion.div
+        aria-hidden="true"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: reduceMotion ? 0 : 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute left-0 top-16 h-1 w-28 origin-left bg-gradient-primary md:w-52"
+      />
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-24 md:py-32 w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -262,7 +289,7 @@ function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.05] max-w-4xl"
+          className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.05] max-w-4xl [text-wrap:balance]"
         >
           Equipamentos Fitness <span className="text-gradient-primary">Profissionais</span> para
           quem busca resultado de verdade.
@@ -288,7 +315,7 @@ function Hero() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-primary text-primary-foreground font-semibold shadow-glow hover:scale-[1.03] transition-transform"
+            className="group relative inline-flex items-center gap-2 overflow-hidden px-7 py-4 rounded-full bg-gradient-primary text-primary-foreground font-semibold shadow-glow hover:scale-[1.03] transition-transform before:absolute before:inset-y-0 before:-left-1/2 before:w-1/3 before:skew-x-[-20deg] before:bg-white/25 before:transition-transform before:duration-700 hover:before:translate-x-[500%]"
           >
             Solicitar Orçamento{" "}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -338,15 +365,26 @@ function Stats() {
   return (
     <section className="border-y border-border/60 bg-card/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 divide-x divide-border/60">
-        {items.map((i) => (
-          <div key={i.label} className="py-10 text-center px-4">
+        {items.map((i, index) => (
+          <motion.div
+            key={i.label}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.08 }}
+            className="group relative overflow-hidden py-10 text-center px-4"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gradient-primary transition-transform duration-500 group-hover:scale-x-100"
+            />
             <div className="font-display text-4xl md:text-5xl font-bold text-gradient-primary">
               <Counter to={i.n} suffix={i.s} />
             </div>
             <div className="mt-2 text-xs md:text-sm text-muted-foreground uppercase tracking-wider">
               {i.label}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
@@ -573,21 +611,45 @@ const CATEGORIAS = [
 function Catalogo() {
   const [active, setActive] = useState(CATEGORIAS[0].id);
   const cat = CATEGORIAS.find((c) => c.id === active)!;
-  const [catalogProducts, setCatalogProducts] = useState<Array<{ id: string; name: string; category: string; description: string; specifications: string; highlights: string; image_url: string | null }>>([]);
+  const [catalogProducts, setCatalogProducts] = useState<
+    Array<{
+      id: string;
+      name: string;
+      category: string;
+      description: string;
+      specifications: string;
+      highlights: string;
+      image_url: string | null;
+    }>
+  >([]);
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.from("products").select("id,name,category,description,specifications,highlights,image_url").eq("published", true).order("sort_order").order("name")
+    supabase
+      .from("products")
+      .select("id,name,category,description,specifications,highlights,image_url")
+      .eq("published", true)
+      .order("sort_order")
+      .order("name")
       .then(({ data }) => setCatalogProducts(data ?? []));
   }, []);
 
   const databaseProducts = catalogProducts.filter((product) =>
-    product.category.toLocaleLowerCase("pt-BR").includes(cat.name.toLocaleLowerCase("pt-BR").split(" ")[0]),
+    product.category
+      .toLocaleLowerCase("pt-BR")
+      .includes(cat.name.toLocaleLowerCase("pt-BR").split(" ")[0]),
   );
-  const shownProducts = databaseProducts.length ? databaseProducts : cat.products.map((product, index) => ({
-    id: `${cat.id}-${index}`, ...product, description: product.desc, category: cat.name,
-    specifications: "", highlights: "", image_url: null,
-  }));
+  const shownProducts = databaseProducts.length
+    ? databaseProducts
+    : cat.products.map((product, index) => ({
+        id: `${cat.id}-${index}`,
+        ...product,
+        description: product.desc,
+        category: cat.name,
+        specifications: "",
+        highlights: "",
+        image_url: null,
+      }));
 
   return (
     <Section id="catalogo">
@@ -664,7 +726,14 @@ function Catalogo() {
               transition={{ delay: i * 0.06 }}
               className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all hover:-translate-y-1"
             >
-              {p.image_url && <img src={p.image_url} alt={p.name} loading="lazy" className="mb-4 h-44 w-full rounded-xl bg-muted object-contain" />}
+              {p.image_url && (
+                <img
+                  src={p.image_url}
+                  alt={p.name}
+                  loading="lazy"
+                  className="mb-4 h-44 w-full rounded-xl bg-muted object-contain"
+                />
+              )}
               <div className="flex items-start justify-between gap-3">
                 <h4 className="font-display font-bold text-lg">{p.name}</h4>
                 <div className="grid place-items-center w-8 h-8 rounded-lg bg-primary/10 text-primary shrink-0">
@@ -672,7 +741,13 @@ function Catalogo() {
                 </div>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>
-              {p.specifications && <p className="mt-3 whitespace-pre-line text-xs text-muted-foreground"><strong className="text-foreground">Especificações:</strong>{"\n"}{p.specifications}</p>}
+              {p.specifications && (
+                <p className="mt-3 whitespace-pre-line text-xs text-muted-foreground">
+                  <strong className="text-foreground">Especificações:</strong>
+                  {"\n"}
+                  {p.specifications}
+                </p>
+              )}
               <a
                 href={WHATSAPP_URL}
                 target="_blank"
@@ -1157,9 +1232,7 @@ function Contato() {
             {status === "success" && (
               <p className="text-primary">Contato enviado! Em breve retorno para você.</p>
             )}
-            {status === "error" && errorMsg && (
-              <p className="text-destructive">{errorMsg}</p>
-            )}
+            {status === "error" && errorMsg && <p className="text-destructive">{errorMsg}</p>}
           </div>
         </motion.form>
       </div>
@@ -1211,12 +1284,17 @@ function Footer() {
     <footer className="border-t border-border bg-card/40 py-14 px-4 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl grid md:grid-cols-3 gap-10">
         <div>
-          <div className="flex items-center gap-2 font-display font-bold text-lg">
-            <div className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-primary">
-              <Dumbbell className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span>Antônio Sardinha</span>
-          </div>
+          <a
+            href="#top"
+            aria-label="Antônio Sardinha - Início"
+            className="inline-block h-20 w-56 overflow-hidden rounded-xl"
+          >
+            <img
+              src={logoImg}
+              alt="Antônio Sardinha - Consultor de Equipamentos Fitness"
+              className="size-full scale-[1.32] object-contain"
+            />
+          </a>
           <p className="mt-4 text-sm text-muted-foreground max-w-xs">
             Consultor especialista em equipamentos fitness profissionais. Autoridade em atendimento
             consultivo e curadoria de produtos.
@@ -1339,7 +1417,11 @@ function CookieConsent() {
     try {
       localStorage.setItem(
         "lgpd-consent",
-        JSON.stringify({ version: 2, categories: { necessary: true, ...categories }, date: new Date().toISOString() }),
+        JSON.stringify({
+          version: 2,
+          categories: { necessary: true, ...categories },
+          date: new Date().toISOString(),
+        }),
       );
     } catch {
       /* ignore */
@@ -1353,7 +1435,10 @@ function CookieConsent() {
     return (
       <button
         type="button"
-        onClick={() => { setManaging(true); setVisible(true); }}
+        onClick={() => {
+          setManaging(true);
+          setVisible(true);
+        }}
         className="fixed bottom-5 left-5 z-50 rounded-full border border-border bg-card/95 px-4 py-2 text-xs font-semibold text-foreground shadow-elegant backdrop-blur-md transition hover:bg-muted"
       >
         Preferências de cookies
@@ -1377,17 +1462,32 @@ function CookieConsent() {
             Sua privacidade é importante 🍪
           </h3>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão,
-            cookies para análise de navegação e melhoria da experiência, em conformidade com a{" "}
+            Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão, cookies
+            para análise de navegação e melhoria da experiência, em conformidade com a{" "}
             <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
             aceitar ou recusar os cookies opcionais a qualquer momento.
           </p>
         </div>
         {managing && (
           <div className="grid gap-2 sm:grid-cols-3">
-            <CookieCategory title="Necessários" description="Essenciais para o site funcionar." checked disabled />
-            <CookieCategory title="Analytics" description="Ajudam a entender o uso do site." checked={preferences.analytics} onChange={(analytics) => setPreferences((p) => ({ ...p, analytics }))} />
-            <CookieCategory title="Marketing" description="Permitem personalizar campanhas." checked={preferences.marketing} onChange={(marketing) => setPreferences((p) => ({ ...p, marketing }))} />
+            <CookieCategory
+              title="Necessários"
+              description="Essenciais para o site funcionar."
+              checked
+              disabled
+            />
+            <CookieCategory
+              title="Analytics"
+              description="Ajudam a entender o uso do site."
+              checked={preferences.analytics}
+              onChange={(analytics) => setPreferences((p) => ({ ...p, analytics }))}
+            />
+            <CookieCategory
+              title="Marketing"
+              description="Permitem personalizar campanhas."
+              checked={preferences.marketing}
+              onChange={(marketing) => setPreferences((p) => ({ ...p, marketing }))}
+            />
           </div>
         )}
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
@@ -1398,7 +1498,15 @@ function CookieConsent() {
           >
             Recusar opcionais
           </button>
-          {!managing && <button type="button" onClick={() => setManaging(true)} className="rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10">Gerenciar preferências</button>}
+          {!managing && (
+            <button
+              type="button"
+              onClick={() => setManaging(true)}
+              className="rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10"
+            >
+              Gerenciar preferências
+            </button>
+          )}
           <button
             type="button"
             onClick={() => save(managing ? preferences : { analytics: true, marketing: true })}
@@ -1412,11 +1520,34 @@ function CookieConsent() {
   );
 }
 
-function CookieCategory({ title, description, checked, disabled = false, onChange }: { title: string; description: string; checked: boolean; disabled?: boolean; onChange?: (checked: boolean) => void }) {
+function CookieCategory({
+  title,
+  description,
+  checked,
+  disabled = false,
+  onChange,
+}: {
+  title: string;
+  description: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange?: (checked: boolean) => void;
+}) {
   return (
-    <label className={`flex items-start gap-3 rounded-xl border border-border p-3 ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}>
-      <input type="checkbox" checked={checked} disabled={disabled} onChange={(event) => onChange?.(event.target.checked)} className="mt-1 h-4 w-4 accent-primary" />
-      <span><span className="block text-sm font-bold text-foreground">{title}</span><span className="block text-xs leading-relaxed text-muted-foreground">{description}</span></span>
+    <label
+      className={`flex items-start gap-3 rounded-xl border border-border p-3 ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange?.(event.target.checked)}
+        className="mt-1 h-4 w-4 accent-primary"
+      />
+      <span>
+        <span className="block text-sm font-bold text-foreground">{title}</span>
+        <span className="block text-xs leading-relaxed text-muted-foreground">{description}</span>
+      </span>
     </label>
   );
 }
