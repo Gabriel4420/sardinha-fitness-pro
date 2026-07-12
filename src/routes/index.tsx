@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { type FormEvent, useEffect, useRef, useState } from "react";
@@ -33,6 +33,14 @@ import {
   Send,
 } from "lucide-react";
 import heroImg from "@/assets/hero-gym.jpg.asset.json";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { PrivacyPolicyContent } from "@/components/PrivacyPolicyContent";
 import consultorImg from "@/assets/consultor.jpg.asset.json";
 import catMusc from "@/assets/cat-musculacao.jpg.asset.json";
 import catCardio from "@/assets/cat-cardio.jpg.asset.json";
@@ -1410,129 +1418,39 @@ function CookieConsent() {
 }
 
 function PrivacyPolicyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
   const updated = new Date().toLocaleDateString("pt-BR", { year: "numeric", month: "long" });
-
   return (
-    <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="privacy-policy-title"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-elegant"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
-          <div>
-            <h2 id="privacy-policy-title" className="font-display text-xl font-bold text-foreground">
-              Política de Privacidade e Cookies
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">Última atualização: {updated}</p>
-          </div>
-          <button
-            type="button"
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-h-[85vh] w-[calc(100%-2rem)] max-w-3xl gap-0 overflow-hidden border-border bg-card p-0 sm:rounded-2xl">
+        <DialogHeader className="border-b border-border px-6 py-4 text-left">
+          <DialogTitle className="font-display text-xl font-bold text-foreground">
+            Política de Privacidade e Cookies
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-xs text-muted-foreground">
+            Última atualização: {updated}. Em conformidade com a LGPD (Lei nº 13.709/2018).
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[60vh] overflow-y-auto px-6 py-5">
+          <PrivacyPolicyContent email={EMAIL} />
+        </div>
+        <div className="flex flex-col-reverse justify-end gap-2 border-t border-border bg-background/40 px-6 py-3 sm:flex-row">
+          <Link
+            to="/privacidade"
             onClick={onClose}
-            aria-label="Fechar política de privacidade"
-            className="rounded-full border border-border p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className="inline-flex items-center justify-center rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground transition hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-          </button>
-        </div>
-        <div className="space-y-5 overflow-y-auto px-6 py-5 text-sm leading-relaxed text-muted-foreground">
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">1. Quem somos</h3>
-            <p>
-              Este site é mantido por <strong className="text-foreground">Antônio Sardinha — Consultor Fitness</strong>,
-              responsável pelo tratamento dos dados pessoais aqui coletados, em conformidade com a{" "}
-              <strong className="text-foreground">Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</strong>.
-              Para qualquer solicitação relacionada aos seus dados, entre em contato pelo e-mail{" "}
-              <a href={`mailto:${EMAIL}`} className="text-primary underline underline-offset-2">{EMAIL}</a>.
-            </p>
-          </section>
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">2. Dados que coletamos</h3>
-            <p>
-              Coletamos apenas os dados que você nos fornece voluntariamente ao preencher nosso formulário de contato,
-              como <strong className="text-foreground">nome, e-mail e a descrição do seu objetivo/projeto</strong>. Também
-              podemos coletar dados técnicos de navegação (páginas visitadas, tipo de dispositivo, navegador e origem
-              de acesso) por meio de cookies opcionais.
-            </p>
-          </section>
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">3. Finalidade do uso</h3>
-            <p>Utilizamos seus dados exclusivamente para:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>Responder à sua solicitação de contato e enviar orçamentos.</li>
-              <li>Encaminhar informações sobre equipamentos, condições comerciais e prazos.</li>
-              <li>Melhorar a experiência de navegação e a qualidade do site.</li>
-            </ul>
-            <p className="mt-2">Não vendemos, alugamos ou compartilhamos seus dados com terceiros para fins comerciais.</p>
-          </section>
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">4. Cookies utilizados</h3>
-            <ul className="mt-1 list-disc space-y-1 pl-5">
-              <li>
-                <strong className="text-foreground">Necessários:</strong> essenciais para o funcionamento do site, como
-                salvar suas preferências de consentimento. Não podem ser desativados.
-              </li>
-              <li>
-                <strong className="text-foreground">Analytics:</strong> nos ajudam a entender como o site é usado, de
-                forma agregada e anônima. Requerem seu consentimento.
-              </li>
-              <li>
-                <strong className="text-foreground">Marketing:</strong> permitem personalizar campanhas e mensurar
-                resultados. Requerem seu consentimento.
-              </li>
-            </ul>
-          </section>
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">5. Seus direitos (LGPD)</h3>
-            <p>
-              Você pode, a qualquer momento, solicitar a confirmação do tratamento, acesso, correção, anonimização,
-              portabilidade, eliminação ou revogação do consentimento dos seus dados pessoais. Basta enviar um e-mail
-              para <a href={`mailto:${EMAIL}`} className="text-primary underline underline-offset-2">{EMAIL}</a>.
-            </p>
-          </section>
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">6. Envio do formulário</h3>
-            <p>
-              Os dados enviados pelo formulário de contato são transmitidos por meio do serviço FormSubmit para
-              entrega do e-mail ao nosso endereço. Não armazenamos essas informações em banco de dados próprio.
-            </p>
-          </section>
-          <section>
-            <h3 className="mb-1 font-display text-base font-semibold text-foreground">7. Alterações</h3>
-            <p>
-              Esta política pode ser atualizada periodicamente. Recomendamos revisá-la sempre que utilizar o site.
-            </p>
-          </section>
-        </div>
-        <div className="flex justify-end border-t border-border bg-background/40 px-6 py-3">
+            Abrir página completa
+          </Link>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full bg-gradient-primary px-5 py-2 text-sm font-bold text-primary-foreground shadow-glow transition hover:scale-[1.02]"
+            className="rounded-full bg-gradient-primary px-5 py-2 text-sm font-bold text-primary-foreground shadow-glow transition hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             Entendi
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -1596,17 +1514,18 @@ function CookieConsentInner() {
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
-      role="dialog"
+      role="region"
       aria-live="polite"
-      aria-label="Aviso de cookies e privacidade (LGPD)"
+      aria-labelledby="lgpd-banner-title"
+      aria-describedby="lgpd-banner-desc"
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-4xl rounded-2xl border border-border bg-card/95 p-5 shadow-elegant backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-6"
     >
       <div className="flex flex-col gap-4">
         <div className="flex-1">
-          <h3 className="font-display text-base font-bold text-foreground">
+          <h3 id="lgpd-banner-title" className="font-display text-base font-bold text-foreground">
             Sua privacidade é importante 🍪
           </h3>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <p id="lgpd-banner-desc" className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão, cookies
             para análise de navegação e melhoria da experiência, em conformidade com a{" "}
             <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
@@ -1614,10 +1533,18 @@ function CookieConsentInner() {
             <button
               type="button"
               onClick={() => setPolicyOpen(true)}
-              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              aria-haspopup="dialog"
             >
               Política de Privacidade e Cookies
-            </button>
+            </button>{" "}
+            ou acesse a{" "}
+            <Link
+              to="/privacidade"
+              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+            >
+              página completa
+            </Link>
             .
           </p>
         </div>
