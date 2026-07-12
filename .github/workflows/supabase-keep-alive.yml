@@ -1,0 +1,41 @@
+name: Supabase keep-alive
+
+on:
+  schedule:
+    # Quatro consultas por dia mantêm atividade regular no banco (horários em UTC).
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Consultar o Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "Configure SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY nos secrets do repositório."
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error \
+            --retry 3 --retry-delay 10 --max-time 30 \
+            --get "$SUPABASE_URL/rest/v1/products" \
+            --data-urlencode "select=id" \
+            --data-urlencode "limit=1" \
+            --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY" \
+            --header "Accept: application/json" \
+            > /dev/null
+
+          echo "Supabase respondeu com sucesso em $(date -u +'%Y-%m-%dT%H:%M:%SZ')."
