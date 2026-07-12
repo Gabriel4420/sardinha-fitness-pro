@@ -1395,6 +1395,7 @@ function WhatsFloat() {
 function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [managing, setManaging] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
   const [preferences, setPreferences] = useState({ analytics: false, marketing: false });
 
   useEffect(() => {
@@ -1465,7 +1466,15 @@ function CookieConsent() {
             Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão, cookies
             para análise de navegação e melhoria da experiência, em conformidade com a{" "}
             <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
-            aceitar ou recusar os cookies opcionais a qualquer momento.
+            aceitar ou recusar os cookies opcionais a qualquer momento. Saiba mais na nossa{" "}
+            <button
+              type="button"
+              onClick={() => setPolicyOpen(true)}
+              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+            >
+              Política de Privacidade e Cookies
+            </button>
+            .
           </p>
         </div>
         {managing && (
@@ -1516,6 +1525,7 @@ function CookieConsent() {
           </button>
         </div>
       </div>
+      <PrivacyPolicyModal open={policyOpen} onClose={() => setPolicyOpen(false)} />
     </motion.div>
   );
 }
