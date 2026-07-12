@@ -1514,17 +1514,18 @@ function CookieConsentInner() {
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
-      role="dialog"
+      role="region"
       aria-live="polite"
-      aria-label="Aviso de cookies e privacidade (LGPD)"
+      aria-labelledby="lgpd-banner-title"
+      aria-describedby="lgpd-banner-desc"
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-4xl rounded-2xl border border-border bg-card/95 p-5 shadow-elegant backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-6"
     >
       <div className="flex flex-col gap-4">
         <div className="flex-1">
-          <h3 className="font-display text-base font-bold text-foreground">
+          <h3 id="lgpd-banner-title" className="font-display text-base font-bold text-foreground">
             Sua privacidade é importante 🍪
           </h3>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <p id="lgpd-banner-desc" className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão, cookies
             para análise de navegação e melhoria da experiência, em conformidade com a{" "}
             <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
@@ -1532,10 +1533,18 @@ function CookieConsentInner() {
             <button
               type="button"
               onClick={() => setPolicyOpen(true)}
-              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              aria-haspopup="dialog"
             >
               Política de Privacidade e Cookies
-            </button>
+            </button>{" "}
+            ou acesse a{" "}
+            <Link
+              to="/privacidade"
+              className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+            >
+              página completa
+            </Link>
             .
           </p>
         </div>
