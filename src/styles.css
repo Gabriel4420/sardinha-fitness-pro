@@ -174,6 +174,49 @@
   box-shadow: var(--shadow-elegant);
 }
 
+/* Semantic brand palette: light is the default; .dark is an explicit override. */
+:root {
+  --background: oklch(0.985 0.006 70);
+  --foreground: oklch(0.19 0.012 60);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.19 0.012 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.19 0.012 60);
+  --primary: oklch(0.61 0.2 42);
+  --primary-foreground: oklch(0.99 0.003 60);
+  --secondary: oklch(0.95 0.01 65);
+  --secondary-foreground: oklch(0.24 0.012 60);
+  --muted: oklch(0.95 0.008 65);
+  --muted-foreground: oklch(0.48 0.018 60);
+  --accent: oklch(0.61 0.2 42);
+  --accent-foreground: oklch(0.99 0.003 60);
+  --border: oklch(0.87 0.012 65);
+  --input: oklch(0.87 0.012 65);
+  --ring: oklch(0.61 0.2 42);
+  --shadow-elegant: 0 30px 80px -30px oklch(0.25 0.03 50 / 0.25);
+}
+
+.dark {
+  --background: oklch(0.145 0.01 60);
+  --foreground: oklch(0.98 0.005 60);
+  --card: oklch(0.19 0.012 60);
+  --card-foreground: oklch(0.98 0.005 60);
+  --popover: oklch(0.19 0.012 60);
+  --popover-foreground: oklch(0.98 0.005 60);
+  --primary: oklch(0.72 0.19 45);
+  --primary-foreground: oklch(0.12 0.01 60);
+  --secondary: oklch(0.24 0.012 60);
+  --secondary-foreground: oklch(0.98 0.005 60);
+  --muted: oklch(0.22 0.01 60);
+  --muted-foreground: oklch(0.72 0.02 60);
+  --accent: oklch(0.72 0.19 45);
+  --accent-foreground: oklch(0.12 0.01 60);
+  --border: oklch(0.28 0.012 60);
+  --input: oklch(0.28 0.012 60);
+  --ring: oklch(0.72 0.19 45);
+  --shadow-elegant: 0 30px 80px -30px oklch(0 0 0 / 0.6);
+}
+
 @keyframes skeleton-sweep {
   100% { transform: translateX(200%); }
 }
