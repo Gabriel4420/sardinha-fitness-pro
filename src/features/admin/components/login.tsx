@@ -1,5 +1,6 @@
 import { Input } from "@/features/admin/components/ui/Input";
-import { Boxes, ChevronLeft, Link } from "lucide-react";
+import { Boxes, ChevronLeft } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { FormEvent } from "react";
 
 import { Center } from "./ui/center";
