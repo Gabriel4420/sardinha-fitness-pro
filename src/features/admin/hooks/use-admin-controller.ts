@@ -15,7 +15,12 @@ type EditorAction =
 const initialEditor: EditorState = { form: EMPTY_PRODUCT, editing: null, busy: false, message: "" };
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
   if (action.type === "patch") return { ...state, form: { ...state.form, ...action.value } };
-  if (action.type === "edit") return { ...state, editing: action.product.id, form: { ...action.product, image_url: action.product.image_url ?? "" } };
+  if (action.type === "edit")
+    return {
+      ...state,
+      editing: action.product.id,
+      form: { ...action.product, image_url: action.product.image_url ?? "" },
+    };
   if (action.type === "reset") return { ...state, form: EMPTY_PRODUCT, editing: null };
   if (action.type === "busy") return { ...state, busy: action.value };
   return { ...state, message: action.value };
@@ -31,26 +36,124 @@ export function useAdminController() {
   const [editor, dispatch] = useReducer(editorReducer, initialEditor);
 
   async function loadProducts() {
-    try { setProducts(await productRepository.list()); } catch (error) { dispatch({ type: "message", value: (error as Error).message }); }
+    try {
+      setProducts(await productRepository.list());
+    } catch (error) {
+      dispatch({ type: "message", value: (error as Error).message });
+    }
   }
   useEffect(() => {
-    void supabase?.auth.getSession().then(({ data }) => { setSession(data.session); setReady(true); });
+    let active = true;
+
+    async function initializeSession() {
+      if (!supabase) {
+        dispatch({
+          type: "message",
+          value: "Supabase não configurado. Verifique as variáveis de ambiente da aplicação.",
+        });
+        setReady(true);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (active) setSession(data.session);
+      } catch (error) {
+        if (active) {
+          dispatch({
+            type: "message",
+            value: `Não foi possível inicializar o painel: ${(error as Error).message}`,
+          });
+        }
+      } finally {
+        if (active) setReady(true);
+      }
+    }
+
+    void initializeSession();
     const listener = supabase?.auth.onAuthStateChange((_event, value) => setSession(value));
-    return () => listener?.data.subscription.unsubscribe();
+    return () => {
+      active = false;
+      listener?.data.subscription.unsubscribe();
+    };
   }, []);
-  useEffect(() => { if (session) void loadProducts(); }, [session]);
+  useEffect(() => {
+    if (session) void loadProducts();
+  }, [session]);
 
-  const filtered = useMemo(() => products.filter((product) => `${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase())), [products, search]);
+  const filtered = useMemo(
+    () =>
+      products.filter((product) =>
+        `${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [products, search],
+  );
   async function run(task: () => Promise<void>) {
-    dispatch({ type: "busy", value: true }); dispatch({ type: "message", value: "" });
-    try { await task(); } catch (error) { dispatch({ type: "message", value: (error as Error).message }); }
-    finally { dispatch({ type: "busy", value: false }); }
+    dispatch({ type: "busy", value: true });
+    dispatch({ type: "message", value: "" });
+    try {
+      await task();
+    } catch (error) {
+      dispatch({ type: "message", value: (error as Error).message });
+    } finally {
+      dispatch({ type: "busy", value: false });
+    }
   }
-  const login = (event: FormEvent) => { event.preventDefault(); void run(async () => { const { error } = await supabase!.auth.signInWithPassword(credentials); if (error) throw new Error("E-mail ou senha inválidos."); }); };
-  const save = (event: FormEvent) => { event.preventDefault(); void run(async () => { await productRepository.save(editor.form, editor.editing); dispatch({ type: "message", value: editor.editing ? "Alterações salvas." : "Produto cadastrado." }); dispatch({ type: "reset" }); await loadProducts(); }); };
-  const upload = (file: File) => void run(async () => dispatch({ type: "patch", value: { image_url: await productRepository.uploadImage(file) } }));
-  const remove = (id: string) => { if (confirm("Excluir este produto do catálogo?")) void run(async () => { await productRepository.remove(id); await loadProducts(); }); };
-  const edit = (product: Product) => { dispatch({ type: "edit", product }); scrollTo({ top: 0, behavior: "smooth" }); };
+  const login = (event: FormEvent) => {
+    event.preventDefault();
+    void run(async () => {
+      const { error } = await supabase!.auth.signInWithPassword(credentials);
+      if (error) throw new Error("E-mail ou senha inválidos.");
+    });
+  };
+  const save = (event: FormEvent) => {
+    event.preventDefault();
+    void run(async () => {
+      await productRepository.save(editor.form, editor.editing);
+      dispatch({
+        type: "message",
+        value: editor.editing ? "Alterações salvas." : "Produto cadastrado.",
+      });
+      dispatch({ type: "reset" });
+      await loadProducts();
+    });
+  };
+  const upload = (file: File) =>
+    void run(async () =>
+      dispatch({ type: "patch", value: { image_url: await productRepository.uploadImage(file) } }),
+    );
+  const remove = (id: string) => {
+    if (confirm("Excluir este produto do catálogo?"))
+      void run(async () => {
+        await productRepository.remove(id);
+        await loadProducts();
+      });
+  };
+  const edit = (product: Product) => {
+    dispatch({ type: "edit", product });
+    scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  return { session, ready, credentials, setCredentials, products, filtered, categories: new Set(products.map((p) => p.category)).size, search, setSearch, menu, setMenu, ...editor, patchForm: (value: Partial<ProductDraft>) => dispatch({ type: "patch", value }), resetForm: () => dispatch({ type: "reset" }), login, save, upload, remove, edit };
+  return {
+    session,
+    ready,
+    credentials,
+    setCredentials,
+    products,
+    filtered,
+    categories: new Set(products.map((p) => p.category)).size,
+    search,
+    setSearch,
+    menu,
+    setMenu,
+    ...editor,
+    patchForm: (value: Partial<ProductDraft>) => dispatch({ type: "patch", value }),
+    resetForm: () => dispatch({ type: "reset" }),
+    login,
+    save,
+    upload,
+    remove,
+    edit,
+  };
 }
