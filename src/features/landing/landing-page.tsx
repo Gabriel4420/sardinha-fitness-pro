@@ -50,7 +50,7 @@ import catEstr from "@/assets/cat-estruturas.jpg.asset.json";
 import catAcess from "@/assets/cat-acessorios.jpg.asset.json";
 import acessHero from "@/assets/acessorios-hero.jpg.asset.json";
 import logoImg from "@/assets/Logo.png";
-import logoDarkImg from "@/assets/Logo Dark.png";
+import logoDarkImg from "@/assets/Logo.png";
 import { leadSchema } from "@/features/leads/domain/lead";
 import { sendLead } from "@/features/leads/data/supabase-lead-gateway";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -67,8 +67,8 @@ function LandingLogo({ className }: { className: string }) {
 
   return (
     <>
-      <img src={logoImg} alt={alt} className={`${className} dark:hidden`} />
-      <img src={logoDarkImg} alt={alt} className={`${className} hidden dark:block`} />
+      <img src={logoImg} alt={alt} className={`${className} rounded-full dark:hidden`} />
+      <img src={logoDarkImg} alt={alt} className={`${className} rounded-full hidden dark:block`} />
     </>
   );
 }
@@ -186,11 +186,11 @@ export function Nav() {
     { href: "#como-funciona", label: "Como Funciona" },
   ];
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl bg-background/70 border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl bg-background/80 border-b border-brand-blue/25">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between">
         <a href="#top" aria-label="Antônio Sardinha - Início" className="group flex items-center">
-          <span className="relative h-16 w-36 overflow-hidden rounded-lg shadow-elegant ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-[1.02] sm:w-44">
-            <LandingLogo className="absolute inset-0 size-full scale-[1.38] object-contain" />
+          <span className="relative size-14 overflow-hidden rounded-full shadow-elegant ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-[1.02]">
+            <LandingLogo className="absolute inset-0 size-full object-cover" />
           </span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
@@ -233,7 +233,7 @@ function Hero() {
           height={1200}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-linear-to-r from-background via-background/85 to-background/40" />
+        <div className="absolute inset-0 bg-linear-to-r from-background via-background/90 to-brand-blue/35" />
         <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
       </motion.div>
 
@@ -343,8 +343,12 @@ function Hero() {
 
 function Stats() {
   const items = [
-    { n: 100, s: "+", label: "Acessórios em estoque" },
-    { n: 15, s: "+", label: "Anos de experiência" },
+    {
+      n: 100,
+      s: "+",
+      label: "Equipamentos e acessórios em estoque pronta entrega envio imediato",
+    },
+    { n: 6, s: "+", label: "Anos de experiência" },
     { n: 500, s: "+", label: "Projetos entregues" },
     { n: 27, s: "", label: "Estados atendidos" },
   ];
@@ -460,7 +464,7 @@ const DIFERENCIAIS = [
 
 function Diferenciais() {
   return (
-    <Section id="diferenciais" className="bg-card/30">
+    <Section id="diferenciais" className="bg-brand-blue/6 dark:bg-brand-blue/15">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -768,14 +772,11 @@ const ACESSORIOS = [
   "Colchonetes",
   "Kettlebells",
   "Cordas",
-  "Faixas elásticas",
-  "Step",
-  "Medicine Ball",
+
   "Caneleiras",
   "Pegadores",
   "Cintos",
-  "Luvas",
-  "Elásticos",
+
   "Equipamentos funcionais",
 ];
 
@@ -920,7 +921,7 @@ const STEPS = [
 
 function ComoFunciona() {
   return (
-    <Section id="como-funciona" className="bg-card/30">
+    <Section id="como-funciona" className="bg-brand-blue/6 dark:bg-brand-blue/15">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -1235,7 +1236,7 @@ function CTA() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="relative overflow-hidden rounded-[2rem] p-10 md:p-16 text-center bg-gradient-primary shadow-glow"
+          className="relative overflow-hidden rounded-[2rem] border border-brand-blue/30 p-10 md:p-16 text-center bg-gradient-primary shadow-glow"
         >
           <div
             className="absolute inset-0 opacity-20"
@@ -1267,15 +1268,15 @@ function CTA() {
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card/40 py-14 px-4 sm:px-6 lg:px-10">
+    <footer className="border-t border-brand-blue/30 bg-brand-blue/[0.07] py-14 px-4 sm:px-6 lg:px-10 dark:bg-brand-blue/20">
       <div className="mx-auto max-w-7xl grid md:grid-cols-4 gap-10">
         <div>
           <a
             href="#top"
             aria-label="Antônio Sardinha - Início"
-            className="inline-block h-20 w-56 overflow-hidden rounded-xl"
+            className="inline-block size-20 overflow-hidden rounded-full"
           >
-            <LandingLogo className="size-full scale-[1.32] object-contain" />
+            <LandingLogo className="size-full object-cover" />
           </a>
           <p className="mt-4 text-sm text-muted-foreground max-w-xs">
             Consultor especialista em equipamentos fitness profissionais. Autoridade em atendimento
@@ -1619,7 +1620,7 @@ function CookieCategory({
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="landing-theme min-h-screen bg-background text-foreground">
       <Nav />
       <main>
         <Hero />
