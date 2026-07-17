@@ -28,6 +28,7 @@ import { Header } from "./ui/header";
 import { FormAdmin } from "./ui/form-admin";
 import { CatalogImporter } from "./ui/catalog-importer";
 import { ProductImageDialog } from "./ui/product-image-dialog";
+import { CategoryFilter, type CategorySummary } from "./ui/category-filter";
 import type { Product } from "../domain/product";
 
 const PRODUCTS_PER_PAGE = 12;
@@ -35,6 +36,7 @@ const PRODUCTS_PER_PAGE = 12;
 export function AdminScreen() {
   const controller = useAdminController();
   const [page, setPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [imageProduct, setImageProduct] = useState<Product | null>(null);
   const {
     session,
@@ -63,13 +65,35 @@ export function AdminScreen() {
     remove,
     edit,
   } = controller;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
+  const categoryOptions = useMemo<CategorySummary[]>(() => {
+    const counts = new Map<string, number>();
+    products.forEach((product) =>
+      counts.set(product.category, (counts.get(product.category) ?? 0) + 1),
+    );
+    return Array.from(counts, ([name, count]) => ({ name, count })).sort((a, b) =>
+      a.name.localeCompare(b.name, "pt-BR"),
+    );
+  }, [products]);
+  const inventoryProducts = useMemo(
+    () =>
+      selectedCategory
+        ? filtered.filter((product) => product.category === selectedCategory)
+        : filtered,
+    [filtered, selectedCategory],
+  );
+  const totalPages = Math.max(1, Math.ceil(inventoryProducts.length / PRODUCTS_PER_PAGE));
   const visibleProducts = useMemo(
-    () => filtered.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE),
-    [filtered, page],
+    () => inventoryProducts.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE),
+    [inventoryProducts, page],
   );
 
   useEffect(() => setPage(1), [search]);
+  useEffect(() => setPage(1), [selectedCategory]);
+  useEffect(() => {
+    if (selectedCategory && !categoryOptions.some(({ name }) => name === selectedCategory)) {
+      setSelectedCategory("");
+    }
+  }, [categoryOptions, selectedCategory]);
   useEffect(() => setPage((current) => Math.min(current, totalPages)), [totalPages]);
   const setForm = (value: typeof form | ((current: typeof form) => typeof form)) =>
     patchForm(typeof value === "function" ? value(form) : value);
@@ -141,10 +165,18 @@ export function AdminScreen() {
                   </p>
                   <h2 className="font-display text-2xl font-bold">Produtos cadastrados</h2>
                 </div>
-                <span className="text-xs text-muted-foreground">{filtered.length} item(ns)</span>
+                <span className="text-xs text-muted-foreground">
+                  {inventoryProducts.length} item(ns)
+                </span>
               </div>
+              <CategoryFilter
+                categories={categoryOptions}
+                selected={selectedCategory}
+                total={products.length}
+                onSelect={setSelectedCategory}
+              />
               <div className="space-y-3">
-                {filtered.length ? (
+                {inventoryProducts.length ? (
                   visibleProducts.map((p) => (
                     <ProductRow
                       key={p.id}
@@ -159,19 +191,20 @@ export function AdminScreen() {
                     <Boxes className="mx-auto mb-3 text-muted-foreground" />
                     <p className="font-semibold">Nenhum produto encontrado</p>
                     <p className="text-sm text-muted-foreground">
-                      Altere a busca ou cadastre um novo item.
+                      Altere a busca, selecione outra categoria ou cadastre um novo item.
                     </p>
                   </div>
                 )}
               </div>
-              {filtered.length > PRODUCTS_PER_PAGE && (
+              {inventoryProducts.length > PRODUCTS_PER_PAGE && (
                 <nav
                   aria-label="Paginação do inventário"
                   className="mt-5 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <p className="text-center text-xs text-muted-foreground sm:text-left">
                     Exibindo {(page - 1) * PRODUCTS_PER_PAGE + 1}–
-                    {Math.min(page * PRODUCTS_PER_PAGE, filtered.length)} de {filtered.length}
+                    {Math.min(page * PRODUCTS_PER_PAGE, inventoryProducts.length)} de{" "}
+                    {inventoryProducts.length}
                   </p>
                   <div className="flex items-center justify-center gap-2">
                     <button
