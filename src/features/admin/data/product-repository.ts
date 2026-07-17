@@ -14,6 +14,11 @@ export const productRepository = {
       : await supabase!.from("products").insert(payload);
     if (result.error) throw result.error;
   },
+  async saveMany(drafts: ProductDraft[]) {
+    const payload = drafts.map((draft) => ({ ...draft, image_url: draft.image_url || null }));
+    const { error } = await supabase!.from("products").insert(payload);
+    if (error) throw error;
+  },
   async remove(id: string) {
     const { error } = await supabase!.from("products").delete().eq("id", id);
     if (error) throw error;

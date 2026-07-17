@@ -24,6 +24,7 @@ import { AdminSkeleton } from "./ui/admin-skeleton";
 import { sidebar } from "./ui/sidebar";
 import { Header } from "./ui/header";
 import { FormAdmin } from "./ui/form-admin";
+import { CatalogImporter } from "./ui/catalog-importer";
 
 export function AdminScreen() {
   const controller = useAdminController();
@@ -48,6 +49,7 @@ export function AdminScreen() {
     login,
     save,
     upload,
+    importProducts,
     remove,
     edit,
   } = controller;
@@ -111,6 +113,7 @@ export function AdminScreen() {
             />
             <Stat label="Categorias" value={categories} icon={LayoutDashboard} />
           </div>
+          <CatalogImporter busy={busy} importProducts={importProducts} />
           <section className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,.75fr)]">
             <div className="order-2 xl:order-1">
               <div className="mb-4 flex items-end justify-between">

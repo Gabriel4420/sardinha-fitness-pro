@@ -123,6 +123,15 @@ export function useAdminController() {
     void run(async () =>
       dispatch({ type: "patch", value: { image_url: await productRepository.uploadImage(file) } }),
     );
+  const importProducts = (drafts: ProductDraft[]) =>
+    void run(async () => {
+      await productRepository.saveMany(drafts);
+      dispatch({
+        type: "message",
+        value: `${drafts.length} produto(s) importado(s) com sucesso.`,
+      });
+      await loadProducts();
+    });
   const remove = (id: string) => {
     if (confirm("Excluir este produto do catálogo?"))
       void run(async () => {
@@ -153,6 +162,7 @@ export function useAdminController() {
     login,
     save,
     upload,
+    importProducts,
     remove,
     edit,
   };
