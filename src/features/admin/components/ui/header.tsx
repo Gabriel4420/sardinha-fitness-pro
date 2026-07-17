@@ -1,5 +1,6 @@
 import { LogOut, Menu, Search } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { SetStateAction } from "react";
 
 import { Session } from "@supabase/supabase-js";
@@ -34,6 +35,7 @@ export const Header = ({ session, search, setMenu, setSearch }: HeaderAdminProps
         <p className="max-w-52 truncate text-sm font-semibold">{session.user.email}</p>
         <p className="text-xs text-muted-foreground">Administrador</p>
       </div>
+      <ThemeToggle />
       <button
         onClick={() => supabase!.auth.signOut()}
         className="rounded-xl border border-border p-2.5 transition hover:border-primary hover:text-primary"
