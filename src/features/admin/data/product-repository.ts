@@ -3,7 +3,11 @@ import type { Product, ProductDraft } from "../domain/product";
 
 export const productRepository = {
   async list(): Promise<Product[]> {
-    const { data, error } = await supabase!.from("products").select("*").order("sort_order").order("name");
+    const { data, error } = await supabase!
+      .from("products")
+      .select("*")
+      .order("sort_order")
+      .order("name");
     if (error) throw error;
     return data ?? [];
   },
@@ -17,6 +21,10 @@ export const productRepository = {
   async saveMany(drafts: ProductDraft[]) {
     const payload = drafts.map((draft) => ({ ...draft, image_url: draft.image_url || null }));
     const { error } = await supabase!.from("products").insert(payload);
+    if (error) throw error;
+  },
+  async updateImage(id: string, imageUrl: string) {
+    const { error } = await supabase!.from("products").update({ image_url: imageUrl }).eq("id", id);
     if (error) throw error;
   },
   async remove(id: string) {

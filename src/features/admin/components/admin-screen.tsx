@@ -27,12 +27,15 @@ import { sidebar } from "./ui/sidebar";
 import { Header } from "./ui/header";
 import { FormAdmin } from "./ui/form-admin";
 import { CatalogImporter } from "./ui/catalog-importer";
+import { ProductImageDialog } from "./ui/product-image-dialog";
+import type { Product } from "../domain/product";
 
 const PRODUCTS_PER_PAGE = 12;
 
 export function AdminScreen() {
   const controller = useAdminController();
   const [page, setPage] = useState(1);
+  const [imageProduct, setImageProduct] = useState<Product | null>(null);
   const {
     session,
     ready,
@@ -54,6 +57,7 @@ export function AdminScreen() {
     login,
     save,
     upload,
+    updateProductImage,
     importProducts,
     remove,
     edit,
@@ -146,6 +150,7 @@ export function AdminScreen() {
                       product={p}
                       edit={() => edit(p)}
                       remove={() => remove(p.id)}
+                      changeImage={() => setImageProduct(p)}
                     />
                   ))
                 ) : (
@@ -207,6 +212,12 @@ export function AdminScreen() {
           </section>
         </main>
       </div>
+      <ProductImageDialog
+        product={imageProduct}
+        busy={busy}
+        onClose={() => setImageProduct(null)}
+        onUpdate={updateProductImage}
+      />
     </div>
   );
 }

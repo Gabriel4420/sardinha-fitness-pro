@@ -94,8 +94,10 @@ export function useAdminController() {
     dispatch({ type: "message", value: "" });
     try {
       await task();
+      return true;
     } catch (error) {
       dispatch({ type: "message", value: (error as Error).message });
+      return false;
     } finally {
       dispatch({ type: "busy", value: false });
     }
@@ -123,6 +125,15 @@ export function useAdminController() {
     void run(async () =>
       dispatch({ type: "patch", value: { image_url: await productRepository.uploadImage(file) } }),
     );
+  const updateProductImage = (product: Product, file: File) =>
+    run(async () => {
+      const imageUrl = await productRepository.uploadImage(file);
+      await productRepository.updateImage(product.id, imageUrl);
+      setProducts((current) =>
+        current.map((item) => (item.id === product.id ? { ...item, image_url: imageUrl } : item)),
+      );
+      dispatch({ type: "message", value: `Imagem de ${product.name} atualizada.` });
+    });
   const importProducts = (drafts: ProductDraft[]) =>
     void run(async () => {
       await productRepository.saveMany(drafts);
@@ -162,6 +173,7 @@ export function useAdminController() {
     login,
     save,
     upload,
+    updateProductImage,
     importProducts,
     remove,
     edit,
