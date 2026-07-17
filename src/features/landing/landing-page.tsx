@@ -30,6 +30,7 @@ import {
   HeartPulse,
   Loader2,
   Send,
+  FileText,
 } from "lucide-react";
 import heroImg from "@/assets/hero-gym.jpg.asset.json";
 import {
@@ -640,6 +641,7 @@ function Catalogo() {
         highlights: "",
         image_url: null,
       }));
+  const featuredProducts = shownProducts.slice(0, 4);
 
   return (
     <Section id="catalogo">
@@ -657,7 +659,7 @@ function Catalogo() {
           Equipamentos para <span className="text-gradient-primary">cada necessidade</span>
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Selecione uma categoria e explore os produtos disponíveis.
+          Selecione uma categoria, veja alguns destaques e acesse o catálogo completo em PDF.
         </p>
       </motion.div>
 
@@ -708,7 +710,7 @@ function Catalogo() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          {shownProducts.map((p, i) => (
+          {featuredProducts.map((p, i) => (
             <motion.div
               key={p.id}
               initial={{ opacity: 0, y: 20 }}
@@ -753,12 +755,13 @@ function Catalogo() {
 
       <div className="mt-12 text-center">
         <a
-          href={WHATSAPP_URL}
+          href="/catalogo-antonio-sardinha.pdf"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-secondary border border-border text-foreground font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
         >
-          Ver catálogo completo <ChevronRight className="w-4 h-4" />
+          <FileText className="w-4 h-4" /> Abrir catálogo completo (PDF){" "}
+          <ChevronRight className="w-4 h-4" />
         </a>
       </div>
     </Section>
