@@ -60,6 +60,10 @@ import { supabase } from "@/lib/supabase";
 const WHATSAPP = "5517988311000";
 const WHATSAPP_MSG = encodeURIComponent("Olá! Gostaria de conhecer os equipamentos disponíveis.");
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP}?text=${WHATSAPP_MSG}`;
+const productWhatsappUrl = (name: string, category: string) =>
+  `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+    `Olá Antônio, estou interessado se ${name} da categoria ${category} está disponivel!`,
+  )}`;
 const INSTAGRAM_URL = "https://www.instagram.com/consultorasfitness";
 const EMAIL = "ajsardinhaf@gmail.com";
 
@@ -741,7 +745,7 @@ function Catalogo() {
                 </p>
               )}
               <a
-                href={WHATSAPP_URL}
+                href={productWhatsappUrl(p.name, p.category)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-3 transition-all"
