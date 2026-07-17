@@ -134,6 +134,14 @@ export function useAdminController() {
       );
       dispatch({ type: "message", value: `Imagem de ${product.name} atualizada.` });
     });
+  const removeProductImage = (product: Product) =>
+    run(async () => {
+      await productRepository.updateImage(product.id, null);
+      setProducts((current) =>
+        current.map((item) => (item.id === product.id ? { ...item, image_url: null } : item)),
+      );
+      dispatch({ type: "message", value: `Imagem de ${product.name} removida.` });
+    });
   const importProducts = (drafts: ProductDraft[]) =>
     void run(async () => {
       await productRepository.saveMany(drafts);
@@ -174,6 +182,7 @@ export function useAdminController() {
     save,
     upload,
     updateProductImage,
+    removeProductImage,
     importProducts,
     remove,
     edit,

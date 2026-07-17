@@ -58,6 +58,7 @@ export function AdminScreen() {
     save,
     upload,
     updateProductImage,
+    removeProductImage,
     importProducts,
     remove,
     edit,
@@ -217,6 +218,7 @@ export function AdminScreen() {
         busy={busy}
         onClose={() => setImageProduct(null)}
         onUpdate={updateProductImage}
+        onRemove={removeProductImage}
       />
     </div>
   );

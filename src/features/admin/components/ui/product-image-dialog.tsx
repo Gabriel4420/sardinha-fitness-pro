@@ -2,17 +2,19 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ClipboardPaste, ImagePlus, Loader2, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState, type ClipboardEvent, type DragEvent } from "react";
 import type { Product } from "../../domain/product";
+import { RemoveProductImageButton } from "./remove-product-image-button";
 
 type Props = {
   product: Product | null;
   busy: boolean;
   onClose: () => void;
   onUpdate: (product: Product, file: File) => Promise<boolean>;
+  onRemove: (product: Product) => Promise<boolean>;
 };
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 
-export function ProductImageDialog({ product, busy, onClose, onUpdate }: Props) {
+export function ProductImageDialog({ product, busy, onClose, onUpdate, onRemove }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
@@ -163,7 +165,16 @@ export function ProductImageDialog({ product, busy, onClose, onUpdate }: Props) 
             )}
           </div>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-border bg-muted/20 p-5 sm:flex-row sm:justify-end sm:p-6">
+          <div className="flex flex-col-reverse gap-3 border-t border-border bg-muted/20 p-5 sm:flex-row sm:items-center sm:p-6">
+            {product && (
+              <RemoveProductImageButton
+                product={product}
+                busy={busy}
+                onRemove={onRemove}
+                onRemoved={onClose}
+              />
+            )}
+            <div className="hidden flex-1 sm:block" />
             <Dialog.Close
               disabled={busy}
               className="rounded-full px-5 py-2.5 text-sm font-bold text-muted-foreground transition hover:bg-muted hover:text-foreground"

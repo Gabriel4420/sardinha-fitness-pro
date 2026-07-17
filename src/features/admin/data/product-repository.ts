@@ -23,7 +23,7 @@ export const productRepository = {
     const { error } = await supabase!.from("products").insert(payload);
     if (error) throw error;
   },
-  async updateImage(id: string, imageUrl: string) {
+  async updateImage(id: string, imageUrl: string | null) {
     const { error } = await supabase!.from("products").update({ image_url: imageUrl }).eq("id", id);
     if (error) throw error;
   },
