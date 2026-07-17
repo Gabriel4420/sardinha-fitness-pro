@@ -62,7 +62,7 @@ const WHATSAPP_MSG = encodeURIComponent("Olá! Gostaria de conhecer os equipamen
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP}?text=${WHATSAPP_MSG}`;
 const productWhatsappUrl = (name: string, category: string) =>
   `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
-    `Olá Antônio, estou interessado se ${name} da categoria ${category} está disponivel!`,
+    `Olá Antônio, gostaria de saber se ${name} da categoria ${category} está disponivel!`,
   )}`;
 const INSTAGRAM_URL = "https://www.instagram.com/consultorasfitness";
 const EMAIL = "ajsardinhaf@gmail.com";
