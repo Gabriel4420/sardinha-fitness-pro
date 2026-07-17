@@ -1,5 +1,5 @@
-import { Loader2, Plus, Upload, X } from "lucide-react";
-import { FormEvent } from "react";
+import { ClipboardPaste, Loader2, Plus, Upload, X } from "lucide-react";
+import { FormEvent, type ClipboardEvent } from "react";
 import { Field } from "./field";
 import { Area } from "./area";
 import { Input } from "./Input";
@@ -25,6 +25,19 @@ export const FormAdmin = ({
   editing,
   save,
 }: FormAdminProps) => {
+  const pasteImage = (event: ClipboardEvent<HTMLDivElement>) => {
+    const image = Array.from(event.clipboardData.items).find((item) =>
+      item.type.startsWith("image/"),
+    );
+    const file = image?.getAsFile();
+    if (file) {
+      event.preventDefault();
+      upload(new File([file], `imagem-colada-${Date.now()}.${file.type.split("/")[1] || "png"}`, {
+        type: file.type,
+      }));
+    }
+  };
+
   return (
     <form
       onSubmit={save}
@@ -104,6 +117,21 @@ export const FormAdmin = ({
             onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
           />
         </label>
+        <div
+          tabIndex={0}
+          onPaste={pasteImage}
+          className="group flex items-center gap-3 rounded-2xl border border-dashed border-brand-blue/40 bg-brand-blue/5 p-4 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-blue/10 text-brand-blue dark:text-blue-300">
+            <ClipboardPaste size={18} />
+          </span>
+          <span>
+            <b className="block text-sm">Colar imagem do catálogo</b>
+            <small className="text-muted-foreground">
+              Copie a imagem, clique nesta área e pressione Ctrl+V
+            </small>
+          </span>
+        </div>
         {form.image_url && (
           <img
             src={form.image_url}
