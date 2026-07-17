@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import type { FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Boxes,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Image as ImageIcon,
   LayoutDashboard,
@@ -26,8 +28,11 @@ import { Header } from "./ui/header";
 import { FormAdmin } from "./ui/form-admin";
 import { CatalogImporter } from "./ui/catalog-importer";
 
+const PRODUCTS_PER_PAGE = 12;
+
 export function AdminScreen() {
   const controller = useAdminController();
+  const [page, setPage] = useState(1);
   const {
     session,
     ready,
@@ -53,6 +58,14 @@ export function AdminScreen() {
     remove,
     edit,
   } = controller;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
+  const visibleProducts = useMemo(
+    () => filtered.slice((page - 1) * PRODUCTS_PER_PAGE, page * PRODUCTS_PER_PAGE),
+    [filtered, page],
+  );
+
+  useEffect(() => setPage(1), [search]);
+  useEffect(() => setPage((current) => Math.min(current, totalPages)), [totalPages]);
   const setForm = (value: typeof form | ((current: typeof form) => typeof form)) =>
     patchForm(typeof value === "function" ? value(form) : value);
   const setEditing = (value: string | null) => {
@@ -127,7 +140,7 @@ export function AdminScreen() {
               </div>
               <div className="space-y-3">
                 {filtered.length ? (
-                  filtered.map((p) => (
+                  visibleProducts.map((p) => (
                     <ProductRow
                       key={p.id}
                       product={p}
@@ -145,6 +158,41 @@ export function AdminScreen() {
                   </div>
                 )}
               </div>
+              {filtered.length > PRODUCTS_PER_PAGE && (
+                <nav
+                  aria-label="Paginação do inventário"
+                  className="mt-5 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <p className="text-center text-xs text-muted-foreground sm:text-left">
+                    Exibindo {(page - 1) * PRODUCTS_PER_PAGE + 1}–
+                    {Math.min(page * PRODUCTS_PER_PAGE, filtered.length)} de {filtered.length}
+                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPage((current) => current - 1)}
+                      disabled={page === 1}
+                      className="grid size-9 place-items-center rounded-xl border border-border text-muted-foreground transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-35"
+                      aria-label="Página anterior"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <span className="min-w-24 text-center text-sm font-bold" aria-live="polite">
+                      {page}{" "}
+                      <span className="font-normal text-muted-foreground">de {totalPages}</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setPage((current) => current + 1)}
+                      disabled={page === totalPages}
+                      className="grid size-9 place-items-center rounded-xl border border-border text-muted-foreground transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-35"
+                      aria-label="Próxima página"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                </nav>
+              )}
             </div>
             <FormAdmin
               setEditing={setEditing}
