@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { EMPTY_PRODUCT as empty } from "../../domain/product";
-import { Boxes, ExternalLink, LayoutDashboard, PackagePlus, X } from "lucide-react";
+import {
+  Boxes,
+  ExternalLink,
+  LayoutDashboard,
+  MessageSquareQuote,
+  PackagePlus,
+  X,
+} from "lucide-react";
 import { ProductDraft } from "../../domain/product";
 import { Dispatch, SetStateAction } from "react";
 
@@ -55,6 +62,14 @@ export const sidebar = ({ setMenu, setEditing, setForm }: SidebarProps) => {
       <nav className="space-y-2">
         <SideItem icon={LayoutDashboard} label="Visão geral" />
         <SideItem icon={Boxes} label="Produtos" active />
+        <a
+          href="#depoimentos-admin"
+          onClick={() => setMenu(false)}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        >
+          <MessageSquareQuote size={18} />
+          Depoimentos
+        </a>
         <button
           onClick={() => {
             setEditing(null);

@@ -1,22 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  Boxes,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  ExternalLink,
-  Image as ImageIcon,
-  LayoutDashboard,
-  Loader2,
-  LogOut,
-  Menu,
-  PackagePlus,
-  Plus,
-  Search,
-  Upload,
-  X,
-} from "lucide-react";
+import { Boxes, CheckCircle2, ChevronLeft, ChevronRight, LayoutDashboard } from "lucide-react";
 
 import { useAdminController } from "../hooks/use-admin-controller";
 import { Login } from "./login";
@@ -28,6 +11,7 @@ import { Header } from "./ui/header";
 import { FormAdmin } from "./ui/form-admin";
 import { CatalogImporter } from "./ui/catalog-importer";
 import { ProductImageDialog } from "./ui/product-image-dialog";
+import { TestimonialManager } from "./ui/testimonial-manager";
 import { CategoryFilter, type CategorySummary } from "./ui/category-filter";
 import type { Product } from "../domain/product";
 
@@ -155,6 +139,7 @@ export function AdminScreen() {
             />
             <Stat label="Categorias" value={categories} icon={LayoutDashboard} />
           </div>
+          <TestimonialManager enabled={Boolean(session)} />
           <CatalogImporter busy={busy} importProducts={importProducts} />
           <section className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,.75fr)]">
             <div className="order-2 xl:order-1">
