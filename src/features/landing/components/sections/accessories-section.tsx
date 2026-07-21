@@ -61,22 +61,23 @@ export function Acessorios() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative"
+          className="relative pl-2 lg:pl-3"
         >
           <div className="absolute -inset-8 bg-gradient-primary opacity-30 blur-3xl rounded-full" />
-          <div className="relative overflow-hidden rounded-3xl shadow-elegant">
+          <div className="relative mx-auto h-112 w-full max-w-2xl overflow-hidden rounded-3xl border border-border/60 bg-muted shadow-elegant sm:h-128 lg:h-136">
             <img
               src={anilhasImg}
               alt="Halteres e anilhas fitness em estoque"
-              width={1400}
-              height={900}
+              width={575}
+              height={1024}
               loading="lazy"
-              className="w-full h-auto object-cover"
+              className="size-full object-cover object-[center_55%]"
             />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/25 via-transparent to-transparent" />
           </div>
-          <div className="absolute -top-4 -left-4 bg-card border border-border rounded-2xl px-5 py-3 shadow-elegant">
-            <div className="text-3xl font-display font-bold text-gradient-primary">100+</div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wider">
+          <div className="absolute -left-4 -top-4 rounded-2xl border border-border bg-card px-5 py-3 shadow-elegant">
+            <div className="font-display text-3xl font-bold text-gradient-primary">100+</div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
               Itens em estoque
             </div>
           </div>
