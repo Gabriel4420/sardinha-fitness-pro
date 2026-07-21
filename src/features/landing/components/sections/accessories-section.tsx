@@ -1,4 +1,4 @@
-import acessHero from "@/assets/acessorios-hero.jpg.asset.json";
+import anilhasImg from "@/assets/anilhas.png";
 import { motion } from "framer-motion";
 import { ArrowRight, Boxes, Truck } from "lucide-react";
 import { ACESSORIOS } from "../../helpers/landing-content";
@@ -66,7 +66,7 @@ export function Acessorios() {
           <div className="absolute -inset-8 bg-gradient-primary opacity-30 blur-3xl rounded-full" />
           <div className="relative overflow-hidden rounded-3xl shadow-elegant">
             <img
-              src={acessHero.url}
+              src={anilhasImg}
               alt="Halteres e anilhas fitness em estoque"
               width={1400}
               height={900}
