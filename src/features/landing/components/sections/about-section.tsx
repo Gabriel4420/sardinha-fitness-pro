@@ -19,7 +19,7 @@ export function Sobre() {
           <div className="relative overflow-hidden rounded-3xl shadow-elegant">
             <img
               src={consultorImg.url}
-              alt="AntÃ´nio Sardinha, consultor fitness"
+              alt="Antônio Sardinha, consultor fitness"
               width={900}
               height={1100}
               loading="lazy"
@@ -49,16 +49,16 @@ export function Sobre() {
             Sobre o consultor
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-bold leading-tight">
-            AntÃ´nio Sardinha â€”{" "}
+            Antônio Sardinha —{" "}
             <span className="text-gradient-primary">autoridade em equipamentos fitness</span>
           </h2>
           <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
             Sou especialista em equipamentos fitness e ajudo academias, studios e profissionais da
-            Ã¡rea a montarem espaÃ§os completos, funcionais e altamente durÃ¡veis.
+            área a montarem espaços completos, funcionais e altamente duráveis.
           </p>
           <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-            Meu objetivo Ã© indicar exatamente o equipamento ideal para cada necessidade, evitando
-            gastos desnecessÃ¡rios e entregando a melhor relaÃ§Ã£o custo-benefÃ­cio.
+            Meu objetivo é indicar exatamente o equipamento ideal para cada necessidade, evitando
+            gastos desnecessários e entregando a melhor relação custo-benefício.
           </p>
           <a
             href={WHATSAPP_URL}

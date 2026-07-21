@@ -24,7 +24,7 @@ export function CTA() {
             Vamos montar sua academia?
           </h2>
           <p className="relative mt-4 text-lg text-primary-foreground/90 max-w-2xl mx-auto">
-            Solicite agora um orÃ§amento personalizado sem compromisso.
+            Solicite agora um orçamento personalizado sem compromisso.
           </p>
           <a
             href={WHATSAPP_URL}
@@ -32,7 +32,7 @@ export function CTA() {
             rel="noopener noreferrer"
             className="relative mt-10 inline-flex items-center gap-2 px-10 py-5 rounded-full bg-background text-foreground font-bold text-lg hover:scale-105 transition-transform shadow-elegant"
           >
-            Solicitar OrÃ§amento <ArrowRight className="w-5 h-5" />
+            Solicitar Orçamento <ArrowRight className="w-5 h-5" />
           </a>
         </motion.div>
       </div>

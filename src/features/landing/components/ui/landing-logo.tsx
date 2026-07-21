@@ -1,6 +1,6 @@
 import { default as logoDarkImg, default as logoImg } from "@/assets/Logo.png";
 export function LandingLogo({ className }: { className: string }) {
-  const alt = "AntÃ´nio Sardinha - Consultor de Equipamentos Fitness";
+  const alt = "Antônio Sardinha - Consultor de Equipamentos Fitness";
 
   return (
     <>

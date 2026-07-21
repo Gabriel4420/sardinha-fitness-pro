@@ -16,7 +16,7 @@ export function Diferenciais() {
           Por que trabalhar comigo
         </div>
         <h2 className="font-display text-3xl md:text-5xl font-bold">
-          Diferenciais que fazem <span className="text-gradient-primary">a diferenÃ§a</span>
+          Diferenciais que fazem <span className="text-gradient-primary">a diferença</span>
         </h2>
       </motion.div>
 

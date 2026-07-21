@@ -21,10 +21,10 @@ function PrivacyPolicyModal({ open, onClose }: { open: boolean; onClose: () => v
       <DialogContent className="max-h-[85vh] w-[calc(100%-2rem)] max-w-3xl gap-0 overflow-hidden border-border bg-card p-0 sm:rounded-2xl">
         <DialogHeader className="border-b border-border px-6 py-4 text-left">
           <DialogTitle className="font-display text-xl font-bold text-foreground">
-            PolÃ­tica de Privacidade e Cookies
+            Política de Privacidade e Cookies
           </DialogTitle>
           <DialogDescription className="mt-1 text-xs text-muted-foreground">
-            Ãšltima atualizaÃ§Ã£o: {updated}. Em conformidade com a LGPD (Lei nÂº 13.709/2018).
+            Última atualização: {updated}. Em conformidade com a LGPD (Lei nº 13.709/2018).
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[60vh] overflow-y-auto px-6 py-5">
@@ -36,7 +36,7 @@ function PrivacyPolicyModal({ open, onClose }: { open: boolean; onClose: () => v
             onClick={onClose}
             className="inline-flex items-center justify-center rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground transition hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            Abrir pÃ¡gina completa
+            Abrir página completa
           </Link>
           <button
             type="button"
@@ -101,7 +101,7 @@ function CookieConsentInner() {
         }}
         className="fixed bottom-5 left-5 z-50 rounded-full border border-border bg-card/95 px-4 py-2 text-xs font-semibold text-foreground shadow-elegant backdrop-blur-md transition hover:bg-muted"
       >
-        PreferÃªncias de cookies
+        Preferências de cookies
       </button>
     );
   }
@@ -120,12 +120,12 @@ function CookieConsentInner() {
       <div className="flex flex-col gap-4">
         <div className="flex-1">
           <h3 id="lgpd-banner-title" className="font-display text-base font-bold text-foreground">
-            Sua privacidade Ã© importante ðŸª
+            Sua privacidade é importante 🍪
           </h3>
           <p id="lgpd-banner-desc" className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Utilizamos cookies essenciais para o funcionamento do site e, com sua permissÃ£o,
-            cookies para anÃ¡lise de navegaÃ§Ã£o e melhoria da experiÃªncia, em conformidade com a{" "}
-            <strong className="text-foreground">LGPD (Lei nÂº 13.709/2018)</strong>. VocÃª pode
+            Utilizamos cookies essenciais para o funcionamento do site e, com sua permissão, cookies
+            para análise de navegação e melhoria da experiência, em conformidade com a{" "}
+            <strong className="text-foreground">LGPD (Lei nº 13.709/2018)</strong>. Você pode
             aceitar ou recusar os cookies opcionais a qualquer momento. Saiba mais na nossa{" "}
             <button
               type="button"
@@ -133,14 +133,14 @@ function CookieConsentInner() {
               className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
               aria-haspopup="dialog"
             >
-              PolÃ­tica de Privacidade e Cookies
+              Política de Privacidade e Cookies
             </button>{" "}
             ou acesse a{" "}
             <Link
               to="/privacidade"
               className="font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
             >
-              pÃ¡gina completa
+              página completa
             </Link>
             .
           </p>
@@ -148,14 +148,14 @@ function CookieConsentInner() {
         {managing && (
           <div className="grid gap-2 sm:grid-cols-3">
             <CookieCategory
-              title="NecessÃ¡rios"
+              title="Necessários"
               description="Essenciais para o site funcionar."
               checked
               disabled
             />
             <CookieCategory
-              title="Analytics"
-              description="Ajudam a entender o uso do site."
+              title="Análise"
+              description="Ajuda a entender como o site é utilizado."
               checked={preferences.analytics}
               onChange={(analytics) => setPreferences((p) => ({ ...p, analytics }))}
             />
@@ -181,7 +181,7 @@ function CookieConsentInner() {
               onClick={() => setManaging(true)}
               className="rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10"
             >
-              Gerenciar preferÃªncias
+              Gerenciar preferências
             </button>
           )}
           <button

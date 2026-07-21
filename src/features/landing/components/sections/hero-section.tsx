@@ -16,7 +16,7 @@ export function Hero() {
       <motion.div style={{ y, opacity }} className="absolute inset-0 -z-10">
         <img
           src={heroImg.url}
-          alt="Academia profissional premium com equipamentos de Ãºltima geraÃ§Ã£o"
+          alt="Academia profissional premium com equipamentos de última geração"
           width={1920}
           height={1200}
           className="w-full h-full object-cover"

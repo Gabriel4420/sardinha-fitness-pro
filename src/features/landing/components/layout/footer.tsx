@@ -9,7 +9,7 @@ export function Footer() {
         <div>
           <a
             href="#top"
-            aria-label="AntÃ´nio Sardinha - InÃ­cio"
+            aria-label="Antônio Sardinha - Início"
             className="inline-block size-20 overflow-hidden rounded-full"
           >
             <LandingLogo className="size-full object-cover" />
@@ -51,12 +51,12 @@ export function Footer() {
               </a>
             </li>
             <li className="inline-flex items-center gap-2">
-              <MapPin className="w-4 h-4" /> SÃ£o JosÃ© do Rio Preto - SP
+              <MapPin className="w-4 h-4" /> São José do Rio Preto - SP
             </li>
           </ul>
         </div>
         <div>
-          <h4 className="font-display font-bold mb-4">NavegaÃ§Ã£o</h4>
+          <h4 className="font-display font-bold mb-4">Navegação</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
               <a href="#sobre" className="hover:text-primary transition-colors">
@@ -70,12 +70,12 @@ export function Footer() {
             </li>
             <li>
               <a href="#catalogo" className="hover:text-primary transition-colors">
-                CatÃ¡logo
+                Catálogo
               </a>
             </li>
             <li>
               <a href="#acessorios" className="hover:text-primary transition-colors">
-                AcessÃ³rios
+                Acessórios
               </a>
             </li>
             <li>
@@ -98,7 +98,7 @@ export function Footer() {
       </div>
       <div className="mx-auto max-w-7xl mt-10 pt-6 border-t border-border flex flex-col items-center gap-2 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between">
         <p>
-          Â© {new Date().getFullYear()} AntÃ´nio Sardinha â€” Consultor Fitness. Todos os direitos
+          © {new Date().getFullYear()} Antônio Sardinha — Consultor Fitness. Todos os direitos
           reservados.
         </p>
         <p>
