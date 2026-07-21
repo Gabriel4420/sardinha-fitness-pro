@@ -32,9 +32,11 @@ export const FormAdmin = ({
     const file = image?.getAsFile();
     if (file) {
       event.preventDefault();
-      upload(new File([file], `imagem-colada-${Date.now()}.${file.type.split("/")[1] || "png"}`, {
-        type: file.type,
-      }));
+      upload(
+        new File([file], `imagem-colada-${Date.now()}.${file.type.split("/")[1] || "png"}`, {
+          type: file.type,
+        }),
+      );
     }
   };
 

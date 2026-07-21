@@ -14,7 +14,11 @@ const aliases = {
 } satisfies Record<keyof ProductDraft, string[]>;
 
 const normalizeKey = (value: string) =>
-  value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
 
 const readValue = (record: ImportRecord, field: keyof ProductDraft) => {
   const entry = Object.entries(record).find(([key]) =>
@@ -60,7 +64,10 @@ function recordsFromText(text: string): ImportRecord[] {
   const labeled = blocks.map((block) => {
     const record: ImportRecord = {};
     let currentKey = "";
-    for (const line of block.split("\n").map((value) => value.trim()).filter(Boolean)) {
+    for (const line of block
+      .split("\n")
+      .map((value) => value.trim())
+      .filter(Boolean)) {
       const match = line.match(/^([^:]{2,40}):\s*(.*)$/);
       if (match) {
         currentKey = match[1];
@@ -85,9 +92,9 @@ export async function parseCatalogFile(file: File): Promise<ProductDraft[]> {
     const parsed: unknown = JSON.parse(await file.text());
     const value = Array.isArray(parsed)
       ? parsed
-      : (parsed as { products?: unknown; produtos?: unknown; catalogo?: unknown }).products ??
+      : ((parsed as { products?: unknown; produtos?: unknown; catalogo?: unknown }).products ??
         (parsed as { produtos?: unknown }).produtos ??
-        (parsed as { catalogo?: unknown }).catalogo;
+        (parsed as { catalogo?: unknown }).catalogo);
     if (!Array.isArray(value)) throw new Error("O JSON deve conter uma lista de produtos.");
     records = value as ImportRecord[];
   } else if (extension === "xlsx" || extension === "xls") {
@@ -96,9 +103,9 @@ export async function parseCatalogFile(file: File): Promise<ProductDraft[]> {
     const rows = sheets[0]?.data ?? [];
     if (rows.length < 2) throw new Error("A planilha precisa ter cabeçalho e ao menos um produto.");
     const headers = rows[0].map(String);
-    records = rows.slice(1).map((row) =>
-      Object.fromEntries(headers.map((header, index) => [header, row[index]])),
-    );
+    records = rows
+      .slice(1)
+      .map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index]])));
   } else if (extension === "docx") {
     const mammoth = await import("mammoth");
     const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
@@ -107,7 +114,8 @@ export async function parseCatalogFile(file: File): Promise<ProductDraft[]> {
     const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
     const worker = await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
     pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
-    const document = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    const document = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) })
+      .promise;
     const pages: string[] = [];
     for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
       const page = await document.getPage(pageNumber);
